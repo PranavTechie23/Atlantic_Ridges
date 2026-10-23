@@ -6,12 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:seed": "tsx scripts/seed-db.ts"
   },
   "dependencies": {
+    "@types/pg": "^8.23.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.61.0",
     "next": "16.4.2",
+    "pg": "^8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "recharts": "^3.10.1",
