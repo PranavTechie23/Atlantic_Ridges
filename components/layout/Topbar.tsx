@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useApp } from "../../lib/context/AppContext";
-import { Search, RefreshCw, Plus, ChevronRight, Volume2, VolumeX, Keyboard, Sparkles, Bot } from "lucide-react";
+import { Search, RefreshCw, ChevronRight, Volume2, VolumeX } from "lucide-react";
 import { LivePulseIndicator } from "../ui/LivePulseIndicator";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { ThemeToggle } from "../ui/ThemeToggle";
@@ -16,10 +16,7 @@ export function Topbar() {
   const [soundOn, setSoundOn] = useState<boolean>(() => sounds.isEnabled());
   const {
     openSearchModal,
-    openShortcutsModal,
     openScanModal,
-    openAddCompetitorModal,
-    openChat,
     isSidebarCollapsed,
     lastScanText,
     isScanningActive,
@@ -57,8 +54,9 @@ export function Topbar() {
 
   return (
     <header
-      className={`fixed top-0 right-0 z-20 h-14 bg-surface-header/75 backdrop-blur-xl border-b border-app shadow-[0_8px_32px_-24px_rgba(15,23,42,0.5)] transition-all duration-200 flex items-center justify-between px-4 sm:px-5 ${sidebarOffset}`}
+      className={`fixed top-0 right-0 z-20 h-14 bg-surface-header/80 backdrop-blur-xl border-b border-app shadow-[0_4px_20px_-16px_rgba(15,23,42,0.3)] transition-all duration-200 flex items-center justify-between px-4 sm:px-5 ${sidebarOffset}`}
     >
+      {/* Left: Breadcrumbs & Live Status */}
       <div className="flex items-center gap-2 min-w-0">
         <Link
           href="/dashboard"
@@ -67,7 +65,7 @@ export function Topbar() {
           PRYSM
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-app-muted hidden sm:inline shrink-0" />
-        <span className="font-medium text-sm text-app-primary truncate">{getBreadcrumb()}</span>
+        <span className="font-semibold text-sm text-app-primary truncate">{getBreadcrumb()}</span>
         <span className="hidden xl:inline-flex items-center ml-2 shrink-0">
           {isScanningActive ? (
             <LivePulseIndicator status="verifying" label="Scanning" sublabel="live" />
@@ -77,80 +75,45 @@ export function Topbar() {
         </span>
       </div>
 
+      {/* Right: Clean, Uncluttered Actions */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <Link
-          href="/audit"
-          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold transition-all shadow-xs group"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-12 transition-transform duration-300" />
-          <span>System Audit</span>
-        </Link>
-
-        <button
-          type="button"
-          onClick={() => {
-            sounds.playChirp();
-            openChat();
-          }}
-          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 text-xs font-semibold transition-all group cursor-pointer"
-          title="Open PRYSM AI Intelligence Copilot (⌘J)"
-        >
-          <Bot className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-          <span className="hidden sm:inline">Copilot</span>
-          <kbd className="hidden lg:inline text-[10px] font-mono px-1 py-0.5 rounded border border-blue-500/30 bg-blue-950/40 text-blue-300">
-            ⌘J
-          </kbd>
-        </button>
-
+        {/* Quick Search */}
         <button
           type="button"
           onClick={openSearchModal}
-          className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-app bg-surface-secondary text-app-muted hover:text-app-primary text-xs transition-all"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-app bg-surface-secondary/70 hover:bg-surface-secondary text-app-muted hover:text-app-primary text-xs transition-all shadow-2xs cursor-pointer"
         >
           <Search className="w-3.5 h-3.5" />
-          <span className="hidden md:inline">Search</span>
-          <kbd className="hidden lg:inline text-[10px] font-mono px-1 py-0.5 rounded border border-app bg-surface-primary text-app-muted">
+          <span className="hidden sm:inline">Search...</span>
+          <kbd className="hidden sm:inline text-[10px] font-mono px-1.5 py-0.5 rounded border border-app bg-surface-primary text-app-muted">
             ⌘K
           </kbd>
         </button>
 
-        <button
-          type="button"
-          onClick={openShortcutsModal}
-          className="hidden md:flex p-2 rounded-lg border border-app text-app-muted hover:text-app-primary hover:bg-surface-secondary"
-          title="Keyboard shortcuts (?)"
-        >
-          <Keyboard className="w-4 h-4" />
-        </button>
-
-        <button
-          type="button"
-          onClick={openAddCompetitorModal}
-          className="hidden lg:flex items-center gap-1 p-2 rounded-lg border border-app text-app-muted hover:text-app-primary hover:bg-surface-secondary"
-          title="Add competitor"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-
+        {/* Primary Scan Action */}
         <button
           type="button"
           onClick={openScanModal}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isScanningActive ? "animate-spin" : ""}`} />
-          <span className="hidden xs:inline sm:inline">Scan</span>
+          <span>Scan</span>
         </button>
+
+        {/* Subtle Separator */}
+        <div className="h-4 w-px bg-slate-200 dark:bg-zinc-800 mx-1 hidden sm:block" />
 
         {/* Audio Sound FX Toggle */}
         <button
           type="button"
           onClick={handleToggleSound}
           className="p-2 rounded-lg border border-app text-app-muted hover:text-app-primary hover:bg-surface-secondary transition-colors cursor-pointer"
-          title={soundOn ? "Mute audio sound effects" : "Enable futuristic audio feedback"}
+          title={soundOn ? "Mute audio sound effects" : "Enable audio sound effects"}
         >
-          {soundOn ? <Volume2 className="w-4 h-4 text-blue-400" /> : <VolumeX className="w-4 h-4 text-zinc-500" />}
+          {soundOn ? <Volume2 className="w-4 h-4 text-blue-500" /> : <VolumeX className="w-4 h-4 text-zinc-400" />}
         </button>
 
+        {/* Theme Toggle, Notifications, Profile */}
         <ThemeToggle variant="icon" />
         <NotificationDropdown />
         <UserMenu />

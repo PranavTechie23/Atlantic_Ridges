@@ -37,7 +37,7 @@ export function FloatingQuickActions() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-24 sm:right-26 z-35 flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-full bg-[#111318]/90 border border-[#262A33] backdrop-blur-xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div className="no-print print:hidden fixed bottom-6 right-24 sm:right-26 z-35 flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-full bg-[#111318]/90 border border-[#262A33] backdrop-blur-xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300">
       <button
         onClick={() => {
           sounds.playChirp();

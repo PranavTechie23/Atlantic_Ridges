@@ -1491,9 +1491,14 @@ html:not(.dark) {
   nav,
   footer:not(.report-print-footer),
   .no-print,
+  .print-hidden,
+  .print\:hidden,
   .screen-only,
   .screen-citation,
   [class*="FloatingQuick"],
+  [class*="PrysmChatbot"],
+  button[title*="Copilot"],
+  button[title*="PRYSM Copilot"],
   .welcome-toast-enter {
     display: none !important;
   }
@@ -1592,42 +1597,48 @@ html:not(.dark) {
   }
 
   .report-print-cover {
-    page-break-after: always;
-    padding: 8mm 0 12mm;
-    border-bottom: 2px solid #1e293b;
-    margin-bottom: 10mm;
+    padding: 4mm 0 7mm;
+    border-bottom: 2pt solid #2563eb;
+    margin-bottom: 7mm;
+    page-break-after: avoid;
+    break-after: avoid;
   }
 
   .report-print-logo {
     font-family: ui-monospace, monospace;
-    font-size: 11px;
+    font-size: 11pt;
     font-weight: 800;
     letter-spacing: 0.15em;
-    color: #2563eb;
-    margin-bottom: 8mm;
+    color: #2563eb !important;
+    margin-bottom: 5mm;
   }
 
   .report-print-title {
-    font-size: 22pt;
+    font-size: 20pt;
     font-weight: 800;
-    color: #0f172a;
+    color: #0f172a !important;
     line-height: 1.15;
-    margin: 0 0 4mm;
+    margin: 0 0 3mm;
   }
 
   .report-print-subtitle {
-    font-size: 11pt;
-    color: #475569;
-    margin: 0 0 8mm;
+    font-size: 10.5pt;
+    color: #334155 !important;
+    margin: 0 0 6mm;
     max-width: 95%;
+    line-height: 1.4;
   }
 
   .report-print-meta {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4mm;
-    font-size: 9pt;
-    margin: 0 0 6mm;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3mm;
+    font-size: 8.5pt;
+    margin: 0 0 4mm;
+    padding: 3mm;
+    background: #f1f5f9;
+    border: 1pt solid #cbd5e1;
+    border-radius: 4pt;
   }
 
   .report-print-meta dt {
@@ -1640,15 +1651,17 @@ html:not(.dark) {
 
   .report-print-meta dd {
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
     color: #0f172a;
   }
 
   .report-print-classification {
-    font-size: 8pt;
+    font-size: 7.5pt;
     font-family: ui-monospace, monospace;
     color: #64748b;
     margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   .report-section {
@@ -1658,21 +1671,28 @@ html:not(.dark) {
   }
 
   .report-section-title {
-    color: #334155 !important;
+    color: #0f172a !important;
+    font-weight: 800 !important;
+    font-size: 12pt !important;
     margin-bottom: 3mm;
+    border-bottom: 1pt solid #e2e8f0;
+    padding-bottom: 1.5mm;
   }
 
   .report-prose,
   .report-card {
     background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
+    border: 1pt solid #cbd5e1 !important;
     color: #0f172a !important;
     box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .report-table {
     border-collapse: collapse;
-    font-size: 9pt;
+    font-size: 8.5pt;
+    width: 100%;
   }
 
   .report-table thead {
