@@ -10,8 +10,8 @@ import {
 } from "../db/real-data";
 import { upsertSeedUser } from "../lib/auth/user-store";
 import {
-  JUDGE_DEMO_EMAIL,
-  JUDGE_DEMO_PASSWORD_HINT,
+  DEMO_WORKSPACE_EMAIL,
+  DEMO_WORKSPACE_PASSWORD_HINT,
 } from "../lib/auth/demo-access";
 
 async function seed() {
@@ -361,20 +361,20 @@ async function seed() {
     }
 
     await client.query("COMMIT");
-    console.log("🔐 Seeding HackNova judge workspace credentials (scrypt hashed)...");
+    console.log("🔐 Seeding PRYSM demo workspace credentials (scrypt hashed)...");
     await upsertSeedUser({
-      email: JUDGE_DEMO_EMAIL,
-      name: "HackNova Judge",
-      password: JUDGE_DEMO_PASSWORD_HINT,
+      email: DEMO_WORKSPACE_EMAIL,
+      name: "PRYSM Demo Workspace",
+      password: DEMO_WORKSPACE_PASSWORD_HINT,
       plan: "Enterprise Demo",
     });
     await upsertSeedUser({
       email: "demo@prysm.io",
       name: "PRYSM Demo Admin",
-      password: "Demo2026!",
+      password: DEMO_WORKSPACE_PASSWORD_HINT,
       plan: "Enterprise Demo",
     });
-    console.log(`   Judge login → ${JUDGE_DEMO_EMAIL} / ${JUDGE_DEMO_PASSWORD_HINT}`);
+    console.log(`   Demo workspace login → ${DEMO_WORKSPACE_EMAIL} / ${DEMO_WORKSPACE_PASSWORD_HINT}`);
 
     console.log("✅ PRYSM Real-World Intelligence Dataset Successfully Loaded into PostgreSQL!");
   } catch (error) {
