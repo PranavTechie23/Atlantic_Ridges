@@ -24,7 +24,26 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('prysm-theme');if(t==='light'){document.documentElement.classList.remove('dark');}else if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){
+              try {
+                var t = localStorage.getItem('prysm-theme');
+                if (t === 'light') { document.documentElement.classList.remove('dark'); }
+                else if (t === 'dark') { document.documentElement.classList.add('dark'); }
+              } catch(e){}
+
+              // Permanently suppress Next.js dev overlay / 1 Insight badge
+              try {
+                var removeDevPortal = function() {
+                  var portals = document.querySelectorAll('nextjs-portal, [data-nextjs-portal]');
+                  portals.forEach(function(p) { p.remove(); });
+                };
+                removeDevPortal();
+                var observer = new MutationObserver(function() {
+                  removeDevPortal();
+                });
+                observer.observe(document.documentElement, { childList: true, subtree: true });
+              } catch(e){}
+            })();`,
           }}
         />
       </head>

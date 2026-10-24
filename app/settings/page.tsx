@@ -4,12 +4,12 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Bell, Palette, User, Shield, Mail, LogOut } from "lucide-react";
 import { useApp } from "../../lib/context/AppContext";
+import { signOutToLogin } from "../../lib/auth/useSignOutToLogin";
 import { ThemeToggle } from "../../components/ui/ThemeToggle";
-import { sounds } from "../../lib/utils/sound";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, theme, signOutAnimated } = useApp();
+  const { user, theme, signOutAnimated, isSigningOut } = useApp();
 
   return (
     <div className="space-y-8 max-w-3xl">
@@ -34,6 +34,16 @@ export default function SettingsPage() {
               <p className="font-semibold text-app-primary">{user?.name ?? "Not signed in"}</p>
               <p className="text-sm text-app-muted font-mono">{user?.email ?? "—"}</p>
               <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">{user?.plan ?? "—"}</p>
+              {user?.authSource === "database" ? (
+                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
+                  <Shield className="w-3 h-3" />
+                  Verified session · scrypt-hashed credentials in PostgreSQL
+                </p>
+              ) : user?.authSource === "guest" ? (
+                <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">
+                  Demo workspace — sign in with judge credentials for full auth proof
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -59,11 +69,11 @@ export default function SettingsPage() {
             <span className="text-xs text-app-muted">Need to switch accounts?</span>
             <button
               type="button"
+              disabled={isSigningOut}
               onClick={async () => {
-                await signOutAnimated();
-                router.push("/login?loggedOut=true");
+                await signOutToLogin(signOutAnimated, router);
               }}
-              className="px-3.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-xs font-semibold border border-red-500/30 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-xs font-semibold border border-red-500/30 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign out</span>

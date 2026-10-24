@@ -70,6 +70,77 @@
   --scrollbar-track: #08090C;
 }
 
+/* Workspace atmosphere and shared glass surfaces */
+body {
+  background-image:
+    radial-gradient(ellipse 58rem 38rem at 12% -8%, rgba(37, 99, 235, 0.10), transparent 68%),
+    radial-gradient(ellipse 48rem 36rem at 94% 24%, rgba(99, 102, 241, 0.075), transparent 70%),
+    radial-gradient(ellipse 42rem 34rem at 48% 110%, rgba(14, 165, 233, 0.055), transparent 72%);
+  background-attachment: fixed;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(ellipse 58rem 38rem at 12% -8%, rgba(37, 99, 235, 0.16), transparent 68%),
+    radial-gradient(ellipse 48rem 36rem at 94% 24%, rgba(99, 102, 241, 0.12), transparent 70%),
+    radial-gradient(ellipse 42rem 34rem at 48% 110%, rgba(14, 165, 233, 0.08), transparent 72%);
+}
+
+.workspace-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.dark .workspace-atmosphere {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.045) 1px, transparent 1px);
+}
+
+.workspace-glass {
+  background: color-mix(in srgb, var(--surface-primary) 84%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 78%, transparent);
+  box-shadow: 0 12px 36px -24px rgba(15, 23, 42, 0.24), 0 1px 0 rgba(255, 255, 255, 0.55) inset;
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+}
+
+.dark .workspace-glass {
+  background: linear-gradient(145deg, rgba(20, 24, 34, 0.78), rgba(12, 15, 22, 0.72));
+  border-color: rgba(148, 163, 184, 0.12);
+  box-shadow: 0 18px 48px -30px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.055) inset;
+}
+
+.dark .dashboard-card {
+  background: linear-gradient(145deg, rgba(22, 27, 38, 0.82), rgba(14, 17, 25, 0.78));
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+}
+
+.dashboard-card.dashboard-storyline {
+  background:
+    radial-gradient(ellipse 42rem 14rem at 90% 0%, rgba(59, 130, 246, 0.07), transparent 72%),
+    color-mix(in srgb, var(--surface-primary) 76%, transparent);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.dark .dashboard-card.dashboard-storyline {
+  background:
+    radial-gradient(ellipse 42rem 14rem at 90% 0%, rgba(59, 130, 246, 0.10), transparent 72%),
+    linear-gradient(145deg, rgba(20, 24, 34, 0.82), rgba(12, 15, 22, 0.78));
+  border-color: rgba(96, 165, 250, 0.16);
+  box-shadow: 0 18px 48px -32px rgba(37, 99, 235, 0.45), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -373,6 +444,51 @@ body {
   animation: auth-success-ring-pulse 0.9s ease-out 0.2s;
 }
 
+@keyframes auth-sign-out-ring-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.auth-sign-out-ring {
+  animation: auth-sign-out-ring-pulse 1s ease-out 0.15s;
+}
+
+@keyframes auth-success-flash-exit {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+.auth-success-flash-exit {
+  animation: auth-success-flash-exit 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.auth-sign-out-backdrop {
+  animation: auth-success-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-shell-chrome-dim aside,
+.auth-shell-chrome-dim header {
+  opacity: 0.4;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.auth-shell-signing-out {
+  opacity: 0.35;
+  filter: blur(2px);
+  pointer-events: none;
+  transform: scale(0.995);
+}
+
 @keyframes auth-trust-fade {
   from {
     opacity: 0;
@@ -454,6 +570,31 @@ body {
 
 .landing-eyebrow {
   animation: auth-hint-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-preview-glow {
+  background: radial-gradient(ellipse at 50% 50%, rgba(37, 99, 235, 0.26), rgba(99, 102, 241, 0.12) 38%, transparent 72%);
+}
+
+.landing-chart {
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.045), rgba(15, 23, 42, 0.05));
+}
+
+.landing-chart-grid {
+  background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 100% 25%;
+}
+
+.landing-feature-card {
+  background: color-mix(in srgb, var(--surface-primary) 78%, transparent);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+}
+
+.dark .landing-feature-card {
+  background: linear-gradient(145deg, rgba(22, 27, 38, 0.72), rgba(14, 17, 25, 0.66));
+  border-color: rgba(148, 163, 184, 0.13);
+  box-shadow: 0 12px 34px -25px rgba(37, 99, 235, 0.55), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
 .landing-cta-primary:hover {
@@ -1145,7 +1286,7 @@ html:not(.dark) .glass-luxury {
   color: #a7f3d0;
 }
 html:not(.dark) .diff-added {
-  color: #065f46;
+  color: #065f46 !important;
 }
 
 .diff-removed {
@@ -1156,7 +1297,7 @@ html:not(.dark) .diff-added {
   color: #fca5a5;
 }
 html:not(.dark) .diff-removed {
-  color: #991b1b;
+  color: #991b1b !important;
 }
 
 /* LIGHT MODE CLASS ADAPTATIONS */
@@ -1185,7 +1326,9 @@ html:not(.dark) {
   .bg-\[\#202430\],
   .bg-\[\#0C0E12\],
   .bg-\[\#0C0E13\],
-  .bg-\[\#0E1015\] {
+  .bg-\[\#0E1015\],
+  .bg-\[\#0B0D11\],
+  .bg-\[\#1B1E26\] {
     background-color: #F1F5F9 !important;
   }
 
@@ -1206,6 +1349,7 @@ html:not(.dark) {
   .hover\:bg-\[\#1F232D\]:hover,
   .hover\:bg-\[\#161922\]:hover,
   .hover\:bg-\[\#181B22\]:hover,
+  .hover\:bg-\[\#14171E\]:hover,
   .hover\:bg-\[\#252934\]:hover {
     background-color: #E2E8F0 !important;
   }
@@ -1271,6 +1415,31 @@ html:not(.dark) {
   .bg-black\/60,
   .bg-black\/70 {
     background-color: rgba(15, 23, 42, 0.35) !important;
+  }
+
+  .bg-slate-900\/40 {
+    background-color: rgba(15, 23, 42, 0.35) !important;
+  }
+
+  .bg-blue-950\/20 {
+    background-color: rgba(239, 246, 255, 0.9) !important;
+  }
+
+  .border-zinc-800 {
+    border-color: #e2e8f0 !important;
+  }
+
+  .text-emerald-400 {
+    color: #059669 !important;
+  }
+  .text-emerald-300 {
+    color: #047857 !important;
+  }
+  .text-red-400 {
+    color: #dc2626 !important;
+  }
+  .text-amber-400 {
+    color: #d97706 !important;
   }
 
   /* Sidebar brand on light */
@@ -1554,3 +1723,25 @@ html:not(.dark) {
     filter: none !important;
   }
 }
+
+/* ==============================================================================
+ * Suppress Next.js DevTools / Turbopack On-Screen Indicator Badges & Insights
+ * ============================================================================== */
+nextjs-portal,
+[data-nextjs-portal],
+[data-nextjs-toast],
+[data-nextjs-dev-tools],
+#nextjs-dev-tools,
+#next-dev-tools {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+

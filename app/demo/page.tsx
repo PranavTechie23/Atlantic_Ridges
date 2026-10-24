@@ -26,6 +26,7 @@ import { sounds } from "@/lib/utils/sound";
 import { BorderBeam } from "@/components/ui/BorderBeam";
 import { LivePulseIndicator } from "@/components/ui/LivePulseIndicator";
 import { TerminalStream } from "@/components/ui/TerminalStream";
+import { EvidenceStateText } from "@/components/evidence/EvidenceStateText";
 
 interface PresetScenario {
   id: string;
@@ -55,8 +56,8 @@ const PRESETS: PresetScenario[] = [
     significanceScore: 94,
     title: "Acme Cloud Pro Plan Increased to ₹1,399/mo (+40%)",
     summary: "Observed pricing matrix update: Pro tier increased from ₹999/mo to ₹1,399/mo while feature allowances remain identical. Signal detected via automated DOM AST diff.",
-    beforeContent: '<div class="plan-pro">\n  <h3>Pro Tier</h3>\n  <span class="price">₹999</span><span class="period">/month</span>\n  <p>Includes 10k API calls & workspace sync</p>\n</div>',
-    afterContent: '<div class="plan-pro">\n  <h3>Pro Tier</h3>\n  <span class="price">₹1,399</span><span class="period">/month</span>\n  <p>Includes 10k API calls & workspace sync</p>\n</div>',
+    beforeContent: `Pro Tier — ₹999 / month\nIncludes: 10k API calls & workspace sync`,
+    afterContent: `Pro Tier — ₹1,399 / month\nIncludes: 10k API calls & workspace sync (unchanged feature set)`,
     sourceUrl: "https://acmecloud.io/pricing",
     whyItMatters: "A 40% price hike creates an immediate opening for mid-market migrations. Sales teams should immediately initiate outreach to Acme accounts citing our transparent price freeze guarantee.",
   },
@@ -70,8 +71,8 @@ const PRESETS: PresetScenario[] = [
     significanceScore: 89,
     title: "NovaAI Deploys Autonomous Multi-Agent Reasoning Workflows",
     summary: "New enterprise capability detected: Autonomous agents capable of multi-step tool calling, repository code indexing, and automated deployment verification.",
-    beforeContent: '<div class="capabilities">\n  <li>Assisted Code Completion</li>\n  <li>Basic Syntax Linting</li>\n</div>',
-    afterContent: '<div class="capabilities">\n  <li>Assisted Code Completion</li>\n  <li>Basic Syntax Linting</li>\n  <li class="badge-new">Autonomous Multi-Agent Reasoning & Execution Workflows</li>\n</div>',
+    beforeContent: `Capabilities:\n• Assisted code completion\n• Basic syntax linting`,
+    afterContent: `Capabilities:\n• Assisted code completion\n• Basic syntax linting\n• Autonomous multi-agent reasoning & execution workflows (NEW)`,
     sourceUrl: "https://novaai.tech/features",
     whyItMatters: "NovaAI is leapfrogging static autocomplete into full agentic execution. Product teams must accelerate our Copilot v2 launch to neutralize this differentiation.",
   },
@@ -85,8 +86,8 @@ const PRESETS: PresetScenario[] = [
     significanceScore: 84,
     title: "Vertex Labs Pivots Messaging to 'Enterprise Sovereign AI'",
     summary: "Observed hero headline and metadata shift across landing page: replaced 'Fast cloud functions for developers' with 'Sovereign AI Infrastructure for Regulated Enterprises'.",
-    beforeContent: '<h1 class="hero-title">Fast, lightweight cloud functions for agile developer teams</h1>',
-    afterContent: '<h1 class="hero-title">Sovereign AI & Zero-Trust Cloud Infrastructure for Regulated Enterprises</h1>',
+    beforeContent: `Hero headline: "Fast, lightweight cloud functions for agile developer teams"`,
+    afterContent: `Hero headline: "Sovereign AI & zero-trust cloud infrastructure for regulated enterprises"`,
     sourceUrl: "https://vertexlabs.dev",
     whyItMatters: "Indicates Vertex is moving upmarket to capture regulated fintech & healthcare enterprise budgets. We need to reinforce our SOC2 Type II compliance credentials in marketing collateral.",
   },
@@ -100,8 +101,8 @@ const PRESETS: PresetScenario[] = [
     significanceScore: 3,
     title: "Minor DOM Noise: Footer Copyright & Session Token Refresh",
     summary: "Observed modification in footer layout and session nonce: copyright updated from 2025 to 2026, dynamic CSRF token refreshed. No change in pricing, features, or positioning.",
-    beforeContent: '<footer class="site-footer">\n  <input type="hidden" name="csrf" value="tok_9824719274">\n  <p>© 2025 OrbitCRM Inc. All rights reserved.</p>\n</footer>',
-    afterContent: '<footer class="site-footer">\n  <input type="hidden" name="csrf" value="tok_1837492817">\n  <p>© 2026 OrbitCRM Inc. All rights reserved.</p>\n</footer>',
+    beforeContent: `Footer: © 2025 OrbitCRM Inc. (session token rotated — non-strategic)`,
+    afterContent: `Footer: © 2026 OrbitCRM Inc. (session token rotated — non-strategic)`,
     sourceUrl: "https://orbitcrm.com",
     whyItMatters: "System classifies this as Irrelevant Web Noise (Significance Score: 3/100). The noise-filtering heuristics suppress alerts and avoid analyst alert fatigue.",
     isNoiseTest: true,
@@ -324,25 +325,25 @@ export default function DemoPage() {
                 </div>
                 <div>
                   <label className="text-[10px] uppercase font-mono text-zinc-400 block mb-1">
-                    Previous Observed DOM / Text
+                    Previous observed snapshot (plain text)
                   </label>
                   <textarea
                     rows={2}
                     value={customBefore}
                     onChange={(e) => setCustomBefore(e.target.value)}
-                    placeholder="<span class='price'>$29/mo</span>"
+                    placeholder="Pro Plan — ₹999 / month (billed monthly)"
                     className="w-full p-2 rounded bg-[#0C0E12] border border-[#262A33] font-mono text-[11px] text-zinc-300 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] uppercase font-mono text-zinc-400 block mb-1">
-                    Revised Observed DOM / Text
+                    Revised observed snapshot (plain text)
                   </label>
                   <textarea
                     rows={2}
                     value={customAfter}
                     onChange={(e) => setCustomAfter(e.target.value)}
-                    placeholder="<span class='price'>$49/mo</span>"
+                    placeholder="Pro Plan — ₹1,299 / month (billed monthly)"
                     className="w-full p-2 rounded bg-[#0C0E12] border border-[#262A33] font-mono text-[11px] text-zinc-300 focus:outline-none focus:border-blue-500"
                   />
                 </div>
@@ -574,18 +575,14 @@ export default function DemoPage() {
                 <span className="text-[10px] font-mono uppercase text-red-400 font-bold block">
                   Observed State (Previous Snapshot: {result.evidence.observedPreviousDate})
                 </span>
-                <pre className="text-xs font-mono text-zinc-300 overflow-x-auto p-2 rounded bg-black/40">
-                  {result.evidence.beforeContent}
-                </pre>
+                <EvidenceStateText content={result.evidence.beforeContent} variant="before" />
               </div>
 
               <div className="p-4 rounded-lg bg-[#0C0E12] border border-emerald-500/20 space-y-1.5">
                 <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block">
                   Observed State (Current Snapshot: {result.evidence.observedCurrentDate})
                 </span>
-                <pre className="text-xs font-mono text-zinc-100 overflow-x-auto p-2 rounded bg-black/40">
-                  {result.evidence.afterContent}
-                </pre>
+                <EvidenceStateText content={result.evidence.afterContent} variant="after" />
               </div>
             </div>
 
