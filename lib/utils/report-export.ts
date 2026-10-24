@@ -176,8 +176,21 @@ export function attachReportPrintHandlers() {
   };
 }
 
-export function printIntelligenceBrief() {
-  document.body.classList.add(PRINT_BODY_CLASS);
+export function printIntelligenceBrief(report?: IntelligenceReport) {
+  const originalTitle = typeof document !== "undefined" ? document.title : "";
+  if (typeof document !== "undefined" && report) {
+    document.title = reportFileBaseName(report);
+  }
+  if (typeof document !== "undefined") {
+    document.body.classList.add(PRINT_BODY_CLASS);
+  }
   window.print();
-  window.setTimeout(() => document.body.classList.remove(PRINT_BODY_CLASS), 500);
+  window.setTimeout(() => {
+    if (typeof document !== "undefined") {
+      document.body.classList.remove(PRINT_BODY_CLASS);
+      if (report && originalTitle) {
+        document.title = originalTitle;
+      }
+    }
+  }, 1200);
 }

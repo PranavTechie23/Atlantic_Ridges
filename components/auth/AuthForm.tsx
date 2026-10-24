@@ -220,7 +220,7 @@ export function LoginForm() {
   const [judgePrefill, setJudgePrefill] = useState(false);
 
   useEffect(() => {
-    if (searchParams?.get("autofill") !== "judge") return;
+    if (searchParams?.get("autofill") !== "demo") return;
     setEmail(DEMO_ACCESS_COPY.email);
     setPassword(DEMO_ACCESS_COPY.password);
     setJudgePrefill(true);
@@ -313,7 +313,7 @@ export function LoginForm() {
         <div className="auth-hint-enter flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2.5 text-xs text-app-secondary">
           <Lock className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
           <span>
-            Judge credentials loaded from the verification suite — click{" "}
+            Demo workspace credentials loaded — click{" "}
             <strong className="text-app-primary">Sign in</strong> to verify server auth.
           </span>
         </div>

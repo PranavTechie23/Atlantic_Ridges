@@ -168,7 +168,7 @@ export async function getSecurityAuditSnapshot(): Promise<{
   seededJudgeAccount: string;
 }> {
   await ensureAuthTables();
-  const judge = await findUserByEmail("judge@hacknova.io");
+  const demoWorkspace = await findUserByEmail("demo@prysm.io");
   return {
     passwordAlgorithm: "scrypt (N=16384, r=8, p=1) via Node.js crypto",
     plaintextPasswordsStored: false,
@@ -176,6 +176,6 @@ export async function getSecurityAuditSnapshot(): Promise<{
     sessionFlags: ["HttpOnly", "SameSite=Lax", "Secure in production"],
     usersTable: "prysm_users.password_hash only — no password column",
     authEventsTable: "auth_security_events (login audit trail)",
-    seededJudgeAccount: judge ? "judge@hacknova.io present" : "run npm run db:seed",
+    seededJudgeAccount: demoWorkspace ? "demo@prysm.io present" : "run npm run db:seed",
   };
 }

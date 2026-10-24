@@ -1,10 +1,10 @@
-/** Public judge demo — password is seeded via `npm run db:seed`, not stored in client code. */
-export const JUDGE_DEMO_EMAIL = "judge@hacknova.io";
-export const JUDGE_DEMO_PASSWORD_HINT = "Prysm2026!";
+/** Public demo workspace account — seeded via `npm run db:seed`. */
+export const DEMO_WORKSPACE_EMAIL = "demo@prysm.io";
+export const DEMO_WORKSPACE_PASSWORD_HINT = "Demo2026!";
 
 export const DEMO_ACCESS_COPY = {
-  title: "HackNova judge access",
-  body: "Use the seeded workspace account to verify server-side auth, scrypt hashing, and HttpOnly sessions.",
-  email: JUDGE_DEMO_EMAIL,
-  password: JUDGE_DEMO_PASSWORD_HINT,
+  title: "PRYSM demo workspace access",
+  body: "Use the seeded workspace account to explore the demo workspace.",
+  email: DEMO_WORKSPACE_EMAIL,
+  password: DEMO_WORKSPACE_PASSWORD_HINT,
 };

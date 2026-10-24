@@ -64,7 +64,8 @@ export function ReportExportBar({ report }: { report: IntelligenceReport }) {
       return;
     }
     if (kind === "print") {
-      printIntelligenceBrief();
+      flash("Generating PDF dossier... Select 'Save as PDF'");
+      printIntelligenceBrief(report);
       return;
     }
     if (kind === "link") {
@@ -100,31 +101,40 @@ export function ReportExportBar({ report }: { report: IntelligenceReport }) {
         <button
           type="button"
           onClick={() => runExport("print")}
-          className="px-3 py-1.5 rounded-lg border border-app bg-surface-secondary hover:bg-surface-primary text-xs font-medium text-app-secondary flex items-center gap-1.5 transition-colors"
-          title="Tip: enable Background graphics in the print dialog for cover styling"
+          className="px-3.5 py-1.5 rounded-lg border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+          title="Print to PDF dossier (Tip: check 'Background graphics' for cover styling)"
         >
           <Printer className="w-3.5 h-3.5" />
-          Print / Save PDF
+          <span>Export PDF Dossier</span>
         </button>
 
         <div className="relative" ref={menuRef}>
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
-            className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             aria-expanded={menuOpen}
             aria-haspopup="menu"
           >
             <Download className="w-3.5 h-3.5" />
-            Export
+            Export Format
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${menuOpen ? "rotate-180" : ""}`} />
           </button>
 
           {menuOpen && (
             <div
               role="menu"
-              className="absolute right-0 top-full mt-1.5 w-52 rounded-xl border border-app bg-surface-primary shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-150"
+              className="absolute right-0 top-full mt-1.5 w-56 rounded-xl border border-app bg-surface-primary shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-150"
             >
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => runExport("print")}
+                className="w-full px-3 py-2 text-left text-xs text-app-primary hover:bg-surface-secondary flex items-center gap-2 font-medium"
+              >
+                <Printer className="w-4 h-4 text-red-500" />
+                Executive PDF (.pdf)
+              </button>
               <button
                 type="button"
                 role="menuitem"
@@ -132,7 +142,7 @@ export function ReportExportBar({ report }: { report: IntelligenceReport }) {
                 className="w-full px-3 py-2 text-left text-xs text-app-secondary hover:bg-surface-secondary flex items-center gap-2"
               >
                 <FileText className="w-4 h-4 text-blue-500" />
-                Markdown (.md)
+                Markdown Brief (.md)
               </button>
               <button
                 type="button"
@@ -141,7 +151,7 @@ export function ReportExportBar({ report }: { report: IntelligenceReport }) {
                 className="w-full px-3 py-2 text-left text-xs text-app-secondary hover:bg-surface-secondary flex items-center gap-2"
               >
                 <FileJson className="w-4 h-4 text-violet-500" />
-                Structured JSON
+                Structured JSON (.json)
               </button>
               <button
                 type="button"

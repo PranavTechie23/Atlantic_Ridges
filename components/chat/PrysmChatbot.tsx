@@ -195,7 +195,7 @@ export function PrysmChatbot() {
             sounds.playChirp();
             toggleChat();
           }}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-linear-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/25 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center cursor-pointer ring-4 ring-[var(--surface-primary)]"
+          className="no-print print:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-linear-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/25 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center cursor-pointer ring-4 ring-[var(--surface-primary)]"
           title="Open PRYSM Copilot (Ctrl+J)"
         >
           <Bot className="w-6 h-6" />
@@ -204,7 +204,7 @@ export function PrysmChatbot() {
       )}
 
       {isChatOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col w-[min(100vw-2rem,380px)] h-[min(100vh-2rem,520px)] bg-[var(--surface-primary)] backdrop-blur-xl border border-[var(--border-subtle)] rounded-2xl shadow-[var(--card-shadow),0_20px_50px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="no-print print:hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col w-[min(100vw-2rem,380px)] h-[min(100vh-2rem,520px)] bg-[var(--surface-primary)] backdrop-blur-xl border border-[var(--border-subtle)] rounded-2xl shadow-[var(--card-shadow),0_20px_50px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Header */}
           <div className="px-4 py-3 border-b border-[var(--border-subtle)] bg-[var(--surface-secondary)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5 min-w-0">

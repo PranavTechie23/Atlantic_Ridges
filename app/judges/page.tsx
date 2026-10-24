@@ -42,7 +42,7 @@ const initialTests: DiagnosticTest[] = [
   {
     id: "test-cdx",
     name: "1. Permitted Public Sources & Wayback CDX",
-    requirement: "PS Req: Automated analysis of permitted public information & historical records",
+                    requirement: "Explore permitted public information and historical records",
     status: "passed",
     durationMs: 800,
     terminalLogs: [
@@ -56,7 +56,7 @@ const initialTests: DiagnosticTest[] = [
   {
     id: "test-noise",
     name: "2. AST Semantic Signal vs. Ephemeral Noise Suppression",
-    requirement: "PS Req: Detect meaningful changes, filter dynamic noise",
+    requirement: "Distinguish meaningful changes from page noise",
     status: "passed",
     durationMs: 950,
     terminalLogs: [
@@ -71,7 +71,7 @@ const initialTests: DiagnosticTest[] = [
   {
     id: "test-merkle",
     name: "3. Cryptographic Merkle Provenance & SHA-256",
-    requirement: "PS Req: Evidence-backed reports with dated records",
+    requirement: "Connect findings to dated evidence records",
     status: "passed",
     durationMs: 650,
     terminalLogs: [
@@ -85,7 +85,7 @@ const initialTests: DiagnosticTest[] = [
   {
     id: "test-radar",
     name: "4. Multi-Vector Strategic Criteria Comparison",
-    requirement: "PS Req: Configurable criteria for comparisons",
+    requirement: "Compare competitors using configurable criteria",
     status: "passed",
     durationMs: 720,
     terminalLogs: [
@@ -98,7 +98,7 @@ const initialTests: DiagnosticTest[] = [
   {
     id: "test-auth",
     name: "5. Enterprise Auth & Credential Security",
-    requirement: "PS Req: Secure access to intelligence workspace (hashed credentials, session integrity)",
+    requirement: "Protect account access and session integrity",
     status: "passed",
     durationMs: 780,
     terminalLogs: [
@@ -107,13 +107,13 @@ const initialTests: DiagnosticTest[] = [
       "[KDF] scrypt N=16384 r=8 p=1 — per-user random salt",
       "[SESSION] prysm_session HttpOnly + HMAC-SHA256 signed payload",
       "[AUDIT] auth_security_events trail active for login attempts",
-      "[SUCCESS] Judge workspace ready (judge@hacknova.io seeded via db:seed).",
+      "[SUCCESS] Demo workspace authentication is ready.",
     ],
   },
   {
     id: "test-report",
     name: "6. Sourced Intelligence Brief Auto-Synthesis",
-    requirement: "PS Req: Executive reporting with direct source citations",
+    requirement: "Create reports linked to supporting evidence",
     status: "passed",
     durationMs: 1100,
     terminalLogs: [
@@ -185,7 +185,7 @@ export default function JudgesPage() {
             `[DB] ${String(data.usersTable ?? "users.password_hash")}`,
             `[SESSION] ${String(data.sessionCookie ?? "prysm_session")}`,
             `[FLAGS] ${Array.isArray(data.sessionFlags) ? (data.sessionFlags as string[]).join(", ") : "HttpOnly, SameSite=Lax"}`,
-            `[JUDGE] ${String(data.seededJudgeAccount ?? "seed via npm run db:seed")}`,
+            `[DEMO] ${String(data.seededJudgeAccount ?? "run npm run db:seed")}`,
             `[VERIFY] plaintextPasswordsStored=${String(data.plaintextPasswordsStored ?? false)}`,
             "[SUCCESS] Live security audit complete.",
           ];
@@ -206,20 +206,20 @@ export default function JudgesPage() {
 
       {/* Hero Banner */}
       <ScrollReveal direction="down" delayMs={50}>
-        <div className="relative p-8 sm:p-10 rounded-2xl bg-[#0D0F14] border border-amber-500/40 shadow-2xl overflow-hidden space-y-5">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative p-8 sm:p-10 rounded-2xl dashboard-card bg-surface-primary border border-app shadow-sm overflow-hidden space-y-5">
+          <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-blue-500/[0.06] rounded-full blur-3xl" />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-400 text-xs font-bold tracking-wide animate-pulse">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold tracking-wide">
                 <Sparkles className="w-3.5 h-3.5" />
-                SYSTEM ARCHITECTURE &amp; VERIFICATION SUITE
+                PLATFORM OVERVIEW &amp; SYSTEM STATUS
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-[#F5F7FA] tracking-tight">
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-app-primary tracking-tight">
                 Competitor Intelligence Agent · PRYSM
               </h1>
-              <p className="text-sm text-zinc-300 max-w-2xl leading-relaxed">
-                Welcome to PRYSM. Every capability of the Competitor Intelligence and Market Monitoring system has been engineered to production-grade standards with verifiable source data, cryptographic evidence chains, and live interactive simulations.
+              <p className="text-sm text-app-secondary max-w-2xl leading-relaxed">
+                Explore PRYSM&apos;s architecture, product workflow, and current system status. Interactive examples demonstrate how competitor changes can be reviewed, compared, and connected to evidence.
               </p>
             </div>
 
@@ -229,15 +229,15 @@ export default function JudgesPage() {
                   sounds.click();
                   setIsTourOpen(true);
                 }}
-                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all hover:scale-105"
+                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm transition-all hover:scale-105 cursor-pointer"
               >
                 <Award className="w-4 h-4" />
-                <span>Start Guided Tour</span>
+                <span>Start Platform Tour</span>
               </button>
 
               <Link
                 href="/demo"
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition-all"
+                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all"
               >
                 <Play className="w-4 h-4 fill-current" />
                 <span>Open 1-Click Sandbox</span>
@@ -247,37 +247,37 @@ export default function JudgesPage() {
 
           <JudgeSignInPanel />
 
-          {/* Quick Scorecard Summary */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-4 border-t border-[#262A33] text-xs font-mono">
-            <div className="p-3 rounded-lg bg-[#111318] border border-[#262A33]">
-              <span className="text-zinc-500 text-[10px] uppercase block">Innovation</span>
-              <span className="text-amber-400 font-bold text-sm">10 / 10</span>
-              <span className="text-[10px] text-zinc-400 block mt-0.5">AST Noise Filter</span>
+          {/* Platform capability summary */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-4 border-t border-app text-xs font-mono">
+            <div className="p-3 rounded-xl bg-surface-primary border border-app shadow-xs">
+              <span className="text-app-muted text-[10px] uppercase block font-semibold">Innovation</span>
+              <span className="text-amber-500 font-bold text-sm">Concept</span>
+              <span className="text-[10px] text-app-secondary block mt-0.5">Signal vs. noise</span>
             </div>
-            <div className="p-3 rounded-lg bg-[#111318] border border-[#262A33]">
-              <span className="text-zinc-500 text-[10px] uppercase block">Execution</span>
-              <span className="text-emerald-400 font-bold text-sm">10 / 10</span>
-              <span className="text-[10px] text-zinc-400 block mt-0.5">36 Prerendered Routes</span>
+            <div className="p-3 rounded-xl bg-surface-primary border border-app shadow-xs">
+              <span className="text-app-muted text-[10px] uppercase block font-semibold">Execution</span>
+              <span className="text-emerald-500 font-bold text-sm">Available</span>
+              <span className="text-[10px] text-app-secondary block mt-0.5">Interactive workspace</span>
             </div>
-            <div className="p-3 rounded-lg bg-[#111318] border border-[#262A33]">
-              <span className="text-zinc-500 text-[10px] uppercase block">Problem Fit</span>
-              <span className="text-blue-400 font-bold text-sm">10 / 10</span>
-              <span className="text-[10px] text-zinc-400 block mt-0.5">100% PS Compliance</span>
+            <div className="p-3 rounded-xl bg-surface-primary border border-app shadow-xs">
+              <span className="text-app-muted text-[10px] uppercase block font-semibold">Problem Fit</span>
+              <span className="text-blue-500 font-bold text-sm">Workflow</span>
+              <span className="text-[10px] text-app-secondary block mt-0.5">Competitor insights</span>
             </div>
-            <div className="p-3 rounded-lg bg-[#111318] border border-[#262A33]">
-              <span className="text-zinc-500 text-[10px] uppercase block">Evidence</span>
-              <span className="text-purple-400 font-bold text-sm">10 / 10</span>
-              <span className="text-[10px] text-zinc-400 block mt-0.5">SHA-256 Provenance</span>
+            <div className="p-3 rounded-xl bg-surface-primary border border-app shadow-xs">
+              <span className="text-app-muted text-[10px] uppercase block font-semibold">Evidence</span>
+              <span className="text-purple-500 font-bold text-sm">Evidence</span>
+              <span className="text-[10px] text-app-secondary block mt-0.5">Linked record views</span>
             </div>
-            <div className="p-3 rounded-lg bg-[#111318] border border-[#262A33]">
-              <span className="text-zinc-500 text-[10px] uppercase block">Aesthetics</span>
-              <span className="text-cyan-400 font-bold text-sm">10 / 10</span>
-              <span className="text-[10px] text-zinc-400 block mt-0.5">Luxury Dark SaaS</span>
+            <div className="p-3 rounded-xl bg-surface-primary border border-app shadow-xs">
+              <span className="text-app-muted text-[10px] uppercase block font-semibold">Aesthetics</span>
+              <span className="text-cyan-500 font-bold text-sm">Product UI</span>
+              <span className="text-[10px] text-app-secondary block mt-0.5">Responsive workspace</span>
             </div>
-            <div className="p-3 rounded-lg bg-[#111318] border border-emerald-500/20">
-              <span className="text-zinc-500 text-[10px] uppercase block">Security</span>
-              <span className="text-emerald-400 font-bold text-sm">10 / 10</span>
-              <span className="text-[10px] text-zinc-400 block mt-0.5">scrypt + HttpOnly</span>
+            <div className="p-3 rounded-xl bg-surface-primary border border-emerald-500/30 shadow-xs">
+              <span className="text-app-muted text-[10px] uppercase block font-semibold">Security</span>
+              <span className="text-emerald-500 font-bold text-sm">Accounts</span>
+              <span className="text-[10px] text-app-secondary block mt-0.5">Protected sessions</span>
             </div>
           </div>
         </div>
@@ -288,26 +288,26 @@ export default function JudgesPage() {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-blue-400" />
-                Live Self-Test Diagnostic Suite
+              <h2 className="text-xl font-bold text-app-primary flex items-center gap-2">
+                <Terminal className="w-5 h-5 text-blue-500" />
+                System Diagnostics
               </h2>
-              <p className="text-xs text-zinc-400 mt-1">
-                Execute automated diagnostic verifications against PRYSM&apos;s live intelligence pipeline components.
+              <p className="text-xs text-app-secondary mt-1">
+                Review representative system checks and workspace capabilities. Some diagnostics use prepared demo output.
               </p>
             </div>
 
             <button
               onClick={handleRunAllTests}
               disabled={isRunningAll}
-              className={`px-4 py-2 rounded-xl text-xs font-bold font-mono flex items-center gap-2 transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${
                 isRunningAll
                   ? "bg-blue-600/50 text-white cursor-wait"
                   : "bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20"
               }`}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRunningAll ? "animate-spin" : ""}`} />
-              <span>{isRunningAll ? "Executing Tests..." : "Run All 5 Diagnostics"}</span>
+              <span>{isRunningAll ? "Running Checks..." : "Run All Diagnostics"}</span>
             </button>
           </div>
 
@@ -320,29 +320,29 @@ export default function JudgesPage() {
                   onClick={() => setSelectedTestId(t.id)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
                     selectedTestId === t.id
-                      ? "bg-[#181B24] border-blue-500 shadow-md shadow-blue-500/5"
-                      : "bg-[#111318] border-[#262A33] hover:border-zinc-700"
+                      ? "bg-blue-500/10 border-blue-500 shadow-sm"
+                      : "bg-surface-primary border-app hover:border-slate-400 dark:hover:border-zinc-700"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-zinc-200">{t.name}</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                    <span className="font-bold text-xs text-app-primary">{t.name}</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
                       <CheckCircle2 className="w-3 h-3" />
                       PASSED
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">{t.requirement}</p>
+                  <p className="text-[11px] text-app-secondary leading-relaxed">{t.requirement}</p>
                 </div>
               ))}
             </div>
 
             {/* Test Output Terminal Column */}
-            <div className="lg:col-span-7 p-5 rounded-2xl bg-[#08090C] border border-[#262A33] font-mono text-xs flex flex-col justify-between space-y-4">
+            <div className="lg:col-span-7 p-5 rounded-2xl bg-surface-primary border border-app font-mono text-xs flex flex-col justify-between space-y-4 shadow-xs">
               <div className="space-y-3">
-                <div className="flex items-center justify-between border-b border-[#1E232E] pb-3 text-zinc-400">
+                <div className="flex items-center justify-between border-b border-app pb-3 text-app-muted">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                    <span className="text-zinc-200 font-bold">{selectedTest.name}</span>
+                    <span className="text-app-primary font-bold">{selectedTest.name}</span>
                   </div>
                   <button
                     onClick={() => handleRunSingleTest(selectedTest.id)}
@@ -374,7 +374,7 @@ export default function JudgesPage() {
               </div>
 
               <div className="pt-3 border-t border-[#1E232E] flex items-center justify-between text-[10px] text-zinc-500">
-                <span>RFC 9309 Compliant · SHA-256 Engine Verified</span>
+                <span>Responsible collection design · sample evidence workflow</span>
                 <span className="text-emerald-400 font-bold">Latency: {selectedTest.durationMs}ms</span>
               </div>
             </div>
@@ -382,154 +382,154 @@ export default function JudgesPage() {
         </div>
       </ScrollReveal>
 
-      {/* SECTION 2: PROBLEM STATEMENT MAPPING TABLE */}
+      {/* SECTION 2: PLATFORM CAPABILITY MAP */}
       <ScrollReveal direction="up" delayMs={100}>
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            Hacknova Problem Statement Audit Matrix
+          <h2 className="text-xl font-bold text-app-primary flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+            PRYSM Capability Map
           </h2>
 
-          <div className="rounded-2xl border border-[#262A33] bg-[#111318] overflow-hidden text-xs">
+          <div className="dashboard-card rounded-2xl border border-app bg-surface-primary overflow-hidden text-xs shadow-xs">
             <table className="w-full text-left">
-              <thead className="bg-[#14171E] border-b border-[#262A33] font-mono text-zinc-400 text-[10px] uppercase">
+              <thead className="bg-surface-secondary border-b border-app font-mono text-app-muted text-[10px] uppercase">
                 <tr>
-                  <th className="py-3 px-4">Problem Statement Requirement</th>
-                  <th className="py-3 px-4">Implementation in PRYSM</th>
-                  <th className="py-3 px-3">Live Interface</th>
-                  <th className="py-3 px-3 text-right">Audit Status</th>
+                  <th className="py-3 px-4 font-semibold">Product Capability</th>
+                  <th className="py-3 px-4 font-semibold">How PRYSM Approaches It</th>
+                  <th className="py-3 px-3 font-semibold">Explore</th>
+                  <th className="py-3 px-3 text-right font-semibold">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1D212B]">
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
-                    1. Monitor Permitted Public Sources
+              <tbody className="divide-y divide-app">
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
+                    1. Public Source Monitoring
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
-                    Wayback Machine CDX API, Common Crawl WARC indexer, public landing pages & RFC 9309 robots.txt rate-limiter.
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
+                    Designed for public sources and historical archives, with responsible access and robots.txt checks as product requirements.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/sources" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/sources" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /sources →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Demo examples
                     </span>
                   </td>
                 </tr>
 
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
-                    2. Noise Filtering vs. Semantic Changes
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
+                    2. Noise Filtering and Change Detection
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
-                    AST noise scrubber suppresses ephemeral nonces, cookie banners, and copyright rollovers (&lt;5/100) vs pricing (&gt;90/100).
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
+                    Interactive examples illustrate how cosmetic page changes can be separated from pricing or feature changes.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/diff-engine" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/diff-engine" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /diff-engine →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Interactive examples
                     </span>
                   </td>
                 </tr>
 
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
-                    3. Dated History of Observed Changes
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
+                    3. Dated Evidence Records
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
-                    Every snapshot stored with timestamp, Wayback link, raw text payload, and immutable SHA-256 cryptographic hash.
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
+                    Evidence views show the source, date, before/after values, and digest field. Current intelligence records are sample data.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/evidence" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/evidence" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /evidence →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Sample records
                     </span>
                   </td>
                 </tr>
 
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
-                    4. Configurable Comparison Criteria
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
+                    4. Competitor Comparison
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
                     Custom criterion creator with dynamic weight sliders (0–100%) and interactive Recharts Radar threat overlays.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/comparison" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /comparison →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Interactive UI
                     </span>
                   </td>
                 </tr>
 
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
-                    5. Interactive Demonstration Sandbox
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
+                    5. Scenario Sandbox
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
-                    1-click preset simulator (Acme +30% pricing surge) triggering live 5-stage pipeline and auto-generating cited report.
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
+                    A controlled scenario walks through the proposed pipeline and creates an in-memory example report and evidence record.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/demo" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/demo" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /demo →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Simulation
                     </span>
                   </td>
                 </tr>
 
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
                     6. Secure Workspace Access
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
                     PostgreSQL-backed accounts with scrypt password hashes, HttpOnly HMAC sessions, and login audit events — live at /api/auth/security-audit.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/login" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /login →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Implemented for accounts
                     </span>
                   </td>
                 </tr>
 
-                <tr className="hover:bg-[#14171E] transition-colors">
-                  <td className="py-3.5 px-4 font-semibold text-zinc-200">
-                    7. Evidence-Backed Reports with Citations
+                <tr className="hover:bg-slate-100/70 dark:hover:bg-white/[0.04] transition-colors">
+                  <td className="py-3.5 px-4 font-semibold text-app-primary">
+                    7. Reports with Evidence Citations
                   </td>
-                  <td className="py-3.5 px-4 text-zinc-400 text-[11px] leading-relaxed">
-                    Weekly executive briefs featuring inline footnote markers [1] [2] that open exact DOM diffs in the provenance drawer.
+                  <td className="py-3.5 px-4 text-app-secondary text-[11px] leading-relaxed">
+                    Sample and simulated briefs include citation markers that open the corresponding evidence view.
                   </td>
                   <td className="py-3.5 px-3">
-                    <Link href="/reports/rep-weekly-20261023" className="text-blue-400 hover:underline font-mono">
+                    <Link href="/reports/rep-weekly-20261023" className="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">
                       /reports →
                     </Link>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      100% COMPLETE
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      Sample reports
                     </span>
                   </td>
                 </tr>
