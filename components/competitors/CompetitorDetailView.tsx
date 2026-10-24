@@ -646,7 +646,7 @@ export function CompetitorDetailView({ id }: { id: string }) {
                 <div className="p-4 rounded-xl bg-[#111318] border border-red-500/20 space-y-1.5">
                   <span className="font-bold text-red-400 block font-mono text-[11px]">1. Stealth Pricing Inflation</span>
                   <p className="text-zinc-300 text-[11px] leading-relaxed">
-                    Recent +30% unannounced price surge on their Pro tier ($79 → $109/mo) has alienated growth-stage accounts. Frame our predictable pricing model as a hedge.
+                    Recent +30% unannounced price surge on their Pro tier (₹999 → ₹1,299/mo) has alienated growth-stage accounts. Frame our predictable pricing model as a hedge.
                   </p>
                   <button
                     onClick={() => openEvidenceDrawer("ev-acme-pricing-20261023")}

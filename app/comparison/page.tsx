@@ -106,10 +106,13 @@ export default function ComparisonPage() {
 
   // Helper for heatmap cell color intensity
   const getHeatmapColor = (score: number) => {
-    if (score >= 90) return "bg-red-500/15 text-red-400 font-bold border-red-500/30";
-    if (score >= 80) return "bg-amber-500/15 text-amber-300 font-semibold border-amber-500/30";
-    if (score >= 70) return "bg-blue-500/15 text-blue-300 font-medium border-blue-500/30";
-    return "bg-[#161922] text-zinc-400 border-[#262A33]";
+    if (score >= 90)
+      return "bg-red-500/12 text-red-800 dark:text-red-400 font-bold border border-red-500/35 dark:border-red-500/30";
+    if (score >= 80)
+      return "bg-amber-500/12 text-amber-900 dark:text-amber-300 font-semibold border border-amber-500/35 dark:border-amber-500/30";
+    if (score >= 70)
+      return "bg-blue-500/12 text-blue-800 dark:text-blue-300 font-medium border border-blue-500/35 dark:border-blue-500/30";
+    return "bg-slate-100 dark:bg-[#161922] text-slate-600 dark:text-zinc-400 border border-slate-200 dark:border-[#262A33]";
   };
 
   // Helper to get score for a criterion on a competitor
@@ -184,18 +187,18 @@ export default function ComparisonPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/25">
               HACKNOVA &apos;26 REQUIREMENT
             </span>
-            <span className="text-zinc-500">·</span>
-            <span className="text-xs text-zinc-400 font-mono">
+            <span className="text-app-muted">·</span>
+            <span className="text-xs text-app-muted font-mono">
               Configurable Product Criteria & Weighted Comparison
             </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#F5F7FA] mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-app-primary mt-1">
             Competitive Comparison Matrix
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-app-muted mt-1">
             Compare competitors against fully configurable product criteria, adjust strategic weights, and synthesize actionable positioning briefs.
           </p>
         </div>
@@ -203,7 +206,7 @@ export default function ComparisonPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleExportCSV}
-            className="px-3 py-1.5 rounded-lg bg-[#14171E] hover:bg-[#1A1E26] border border-[#262A33] text-xs font-semibold text-zinc-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded-lg bg-surface-primary hover:bg-surface-secondary dark:bg-[#14171E] dark:hover:bg-[#1A1E26] border border-app text-xs font-semibold text-app-secondary flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -219,10 +222,10 @@ export default function ComparisonPage() {
       </div>
 
       {/* View Switcher & Competitor Chips */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-[#111318] border border-[#262A33]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl bg-surface-primary border border-app shadow-xs">
         {/* Competitor Multi-Select Filter */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] font-mono uppercase text-zinc-400 font-bold mr-1">
+          <span className="text-[11px] font-mono uppercase text-app-muted font-bold mr-1">
             Compare:
           </span>
           {competitors.slice(0, 6).map((comp) => {
@@ -233,11 +236,11 @@ export default function ComparisonPage() {
                 onClick={() => toggleCompetitorSelection(comp.id)}
                 className={`px-2.5 py-1 rounded-lg border text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer ${
                   isSelected
-                    ? "bg-blue-600/20 border-blue-500 text-blue-300 font-bold"
-                    : "bg-[#0C0E12] border-[#262A33] text-zinc-500 hover:text-zinc-300"
+                    ? "bg-blue-500/15 border-blue-500/50 text-blue-800 dark:text-blue-300 font-bold"
+                    : "bg-surface-secondary dark:bg-[#0C0E12] border-app text-app-muted hover:text-app-primary"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-blue-400" : "bg-zinc-600"}`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-blue-600 dark:bg-blue-400" : "bg-slate-400 dark:bg-zinc-600"}`} />
                 <span>{comp.name}</span>
               </button>
             );
@@ -245,11 +248,11 @@ export default function ComparisonPage() {
         </div>
 
         {/* View Mode Buttons */}
-        <div className="flex items-center gap-1 bg-[#0C0E12] p-1 rounded-lg border border-[#262A33] self-start md:self-auto text-xs font-mono">
+        <div className="flex items-center gap-1 bg-surface-secondary dark:bg-[#0C0E12] p-1 rounded-lg border border-app self-start md:self-auto text-xs font-mono">
           <button
             onClick={() => setActiveView("matrix")}
             className={`px-3 py-1.5 rounded font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-              activeView === "matrix" ? "bg-blue-600 text-white" : "text-zinc-400 hover:text-zinc-200"
+              activeView === "matrix" ? "bg-blue-600 text-white" : "text-app-muted hover:text-app-primary"
             }`}
           >
             <TableIcon className="w-3.5 h-3.5" />
@@ -258,7 +261,7 @@ export default function ComparisonPage() {
           <button
             onClick={() => setActiveView("radar")}
             className={`px-3 py-1.5 rounded font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-              activeView === "radar" ? "bg-blue-600 text-white" : "text-zinc-400 hover:text-zinc-200"
+              activeView === "radar" ? "bg-blue-600 text-white" : "text-app-muted hover:text-app-primary"
             }`}
           >
             <BarChart2 className="w-3.5 h-3.5" />
@@ -268,18 +271,18 @@ export default function ComparisonPage() {
       </div>
 
       {/* Configurable Criteria & Weight Sliders Management Bar */}
-      <div className="p-5 rounded-xl bg-[#111318] border border-[#262A33] space-y-4">
+      <div className="p-5 rounded-xl bg-surface-primary border border-app space-y-4 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-blue-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">
+            <Sliders className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-app-secondary font-mono">
               Configurable Product Criteria ({criteria.length} Active Vectors)
             </span>
           </div>
 
           <button
             onClick={() => setIsAddingCustom(!isAddingCustom)}
-            className="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/35 text-blue-800 dark:text-blue-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Custom Criterion</span>
@@ -288,8 +291,8 @@ export default function ComparisonPage() {
 
         {/* Add custom criteria inline form */}
         {isAddingCustom && (
-          <div className="p-4 rounded-xl bg-[#0C0E12] border border-blue-500/30 space-y-3 animate-in fade-in">
-            <span className="text-xs font-bold text-blue-300 uppercase font-mono">
+          <div className="p-4 rounded-xl bg-blue-50/80 dark:bg-[#0C0E12] border border-blue-200/80 dark:border-blue-500/30 space-y-3 animate-in fade-in">
+            <span className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase font-mono">
               Define New Strategic Vector:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -298,19 +301,19 @@ export default function ComparisonPage() {
                 placeholder="e.g. SOC2 Type II Compliance, Self-Hosted API"
                 value={newCriterionName}
                 onChange={(e) => setNewCriterionName(e.target.value)}
-                className="px-3 py-1.5 rounded bg-[#111318] border border-[#262A33] text-xs text-zinc-200 focus:outline-none focus:border-blue-500"
+                className="px-3 py-1.5 rounded bg-white dark:bg-[#111318] border border-app text-xs text-app-primary focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
               <div className="flex items-center gap-2">
-                <span className="text-xs text-zinc-400 font-mono">Weight:</span>
+                <span className="text-xs text-app-muted font-mono">Weight:</span>
                 <input
                   type="number"
                   min={5}
                   max={50}
                   value={newCriterionWeight}
                   onChange={(e) => setNewCriterionWeight(Number(e.target.value))}
-                  className="w-16 px-2 py-1.5 rounded bg-[#111318] border border-[#262A33] text-xs text-zinc-200 font-mono"
+                  className="w-16 px-2 py-1.5 rounded bg-white dark:bg-[#111318] border border-app text-xs text-app-primary font-mono"
                 />
-                <span className="text-xs text-zinc-500">%</span>
+                <span className="text-xs text-app-muted">%</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -321,7 +324,7 @@ export default function ComparisonPage() {
                 </button>
                 <button
                   onClick={() => setIsAddingCustom(false)}
-                  className="p-1.5 rounded bg-zinc-800 text-zinc-400 hover:text-zinc-200 cursor-pointer"
+                  className="p-1.5 rounded bg-surface-secondary dark:bg-zinc-800 text-app-muted hover:text-app-primary cursor-pointer border border-app"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -335,10 +338,10 @@ export default function ComparisonPage() {
           {criteria.map((crit) => (
             <div
               key={crit.id}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0C0E12] border border-[#262A33]"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-secondary dark:bg-[#0C0E12] border border-app"
             >
-              <span className="text-zinc-200 font-medium">{crit.label}</span>
-              <span className="text-blue-400 font-bold bg-blue-500/10 px-1.5 py-0.2 rounded">
+              <span className="text-app-primary font-medium">{crit.label}</span>
+              <span className="text-blue-700 dark:text-blue-400 font-bold bg-blue-500/10 px-1.5 py-0.2 rounded">
                 {crit.weight}%
               </span>
               {crit.id.startsWith("crit-custom-") && (
@@ -357,10 +360,10 @@ export default function ComparisonPage() {
 
       {/* VIEW 1: MATRIX TABLE */}
       {activeView === "matrix" && (
-        <div className="rounded-xl border border-[#262A33] bg-[#111318] overflow-hidden shadow-2xl">
+        <div className="rounded-xl border border-app bg-surface-primary overflow-hidden shadow-md dark:shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-[#14171E] border-b border-[#262A33] text-zinc-400 text-[11px] uppercase">
+              <thead className="bg-surface-secondary dark:bg-[#14171E] border-b border-app text-app-muted text-[11px] uppercase">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold w-64">
                     Evaluation Criterion / Weight
@@ -368,10 +371,10 @@ export default function ComparisonPage() {
                   {competitors.filter((c) => selectedCompetitorIds.includes(c.id)).map((comp) => (
                     <th key={comp.id} className="py-3.5 px-3 text-center min-w-[130px]">
                       <Link href={`/competitors/${comp.id}`} className="inline-flex flex-col items-center group">
-                        <span className="text-zinc-200 group-hover:text-blue-400 font-bold transition-colors">
+                        <span className="text-app-primary group-hover:text-blue-600 dark:group-hover:text-blue-400 font-bold transition-colors">
                           {comp.name}
                         </span>
-                        <span className="text-[10px] text-zinc-500 font-normal">
+                        <span className="text-[10px] text-app-muted font-normal">
                           Threat: {comp.threatScore}
                         </span>
                       </Link>
@@ -379,13 +382,13 @@ export default function ComparisonPage() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#1D212B]">
+              <tbody className="divide-y divide-slate-200 dark:divide-[#1D212B]">
                 {criteria.map((crit) => (
-                  <tr key={crit.id} className="hover:bg-[#161922] transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-zinc-200">
+                  <tr key={crit.id} className="hover:bg-surface-secondary/80 dark:hover:bg-[#161922] transition-colors">
+                    <td className="py-3.5 px-4 font-semibold text-app-primary">
                       <div className="flex items-center justify-between">
                         <span>{crit.label}</span>
-                        <span className="text-[10px] text-zinc-500 font-normal">
+                        <span className="text-[10px] text-app-muted font-normal">
                           (wt: {crit.weight}%)
                         </span>
                       </div>
@@ -404,8 +407,8 @@ export default function ComparisonPage() {
                 ))}
 
                 {/* Weighted Composite Overall Score Row */}
-                <tr className="bg-[#14171E] font-bold border-t-2 border-blue-500/40">
-                  <td className="py-4 px-4 text-blue-300 font-bold uppercase tracking-wider">
+                <tr className="bg-blue-50/90 dark:bg-[#14171E] font-bold border-t-2 border-blue-500/40">
+                  <td className="py-4 px-4 text-blue-800 dark:text-blue-300 font-bold uppercase tracking-wider">
                     COMPOSITE WEIGHTED SCORE
                   </td>
                   {competitors.filter((c) => selectedCompetitorIds.includes(c.id)).map((comp) => (
@@ -424,12 +427,12 @@ export default function ComparisonPage() {
 
       {/* VIEW 2: RADAR CHART */}
       {activeView === "radar" && (
-        <div className="p-6 rounded-2xl bg-[#111318] border border-[#262A33] shadow-2xl space-y-4">
+        <div className="p-6 rounded-2xl bg-surface-primary border border-app shadow-md dark:shadow-2xl space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">
+            <span className="text-xs font-bold uppercase tracking-wider text-app-secondary font-mono">
               Multi-Competitor Strategic Vector Radar
             </span>
-            <span className="text-xs text-zinc-500 font-mono">
+            <span className="text-xs text-app-muted font-mono">
               Comparing {selectedCompetitorIds.length} Entities
             </span>
           </div>
@@ -472,23 +475,23 @@ export default function ComparisonPage() {
       )}
 
       {/* PRYSM Strategic Synthesis */}
-      <div className="p-6 rounded-xl bg-linear-to-br from-[#12151D] to-[#171B24] border border-blue-500/30 space-y-4 shadow-xl">
-        <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider font-mono">
-          <Sparkles className="w-4 h-4 text-blue-400" />
+      <div className="p-6 rounded-xl bg-linear-to-br from-blue-50 via-white to-indigo-50/90 dark:from-[#12151D] dark:to-[#171B24] border border-blue-200/90 dark:border-blue-500/30 space-y-4 shadow-md dark:shadow-xl">
+        <div className="flex items-center gap-2 text-blue-800 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider font-mono">
+          <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           <span>PRYSM Strategic Intelligence Synthesis</span>
         </div>
 
-        <p className="text-zinc-200 text-sm leading-relaxed font-medium">
+        <p className="text-slate-700 dark:text-zinc-200 text-sm leading-relaxed font-medium">
           &quot;NovaAI leads on AI Capability (97/100), while Acme Cloud dominates on Workflow Automation (91/100). However, Acme&apos;s recent 30% price expansion on their core Pro plan has increased their Pricing Pressure index to 78, creating an immediate opportunity to capture mid-market accounts.&quot;
         </p>
 
-        <div className="pt-3 border-t border-[#262A33] flex items-center justify-between text-xs">
-          <span className="text-zinc-400">
+        <div className="pt-3 border-t border-blue-200/80 dark:border-[#262A33] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <span className="text-slate-600 dark:text-zinc-400">
             Observation Basis: 6 Competitors · 27 Verified Changes · 94.7% Average Cryptographic Verification
           </span>
           <button
             onClick={() => openEvidenceDrawer("ev-acme-pricing-20261023")}
-            className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer"
+            className="text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer shrink-0"
           >
             <span>Inspect Verified Price Hike Evidence</span>
             <ArrowRight className="w-3.5 h-3.5" />

@@ -8,15 +8,10 @@ import {
   ShieldCheck,
   Search,
   ExternalLink,
-  Calendar,
-  Clock,
-  Cpu,
   Hash,
   ArrowRight,
-  Filter,
-  CheckCircle2,
-  FileCode,
 } from "lucide-react";
+import { EvidenceStateText } from "../../components/evidence/EvidenceStateText";
 
 export default function EvidenceExplorerPage() {
   const { openEvidenceDrawer } = useApp();
@@ -49,38 +44,35 @@ export default function EvidenceExplorerPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-[#F5F7FA]">
-              Evidence Explorer
-            </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-bold tracking-tight text-app-primary">Evidence Explorer</h1>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25">
               Cryptographically Verified
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-app-muted mt-1">
             Every intelligence signal is traceable to its original DOM snapshot and cryptographic hash.
           </p>
         </div>
 
-        {/* Global verification stat */}
-        <div className="flex items-center gap-3 p-2.5 rounded-lg bg-[#111318] border border-[#262A33] text-xs font-mono self-start sm:self-auto">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span className="text-zinc-300">
+        <div className="flex items-center gap-3 p-2.5 rounded-lg bg-surface-primary border border-app text-xs font-mono self-start sm:self-auto shadow-xs">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <span className="text-app-secondary">
             {mockEvidence.length} Signals Verified · 0 Flagged
           </span>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="p-3 rounded-xl bg-[#111318] border border-[#262A33] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+      <div className="p-3 rounded-xl bg-surface-primary border border-app flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-xs">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-app-muted absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search verified snippets, URLs, or competitors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-[#0C0E12] border border-[#262A33] rounded-lg text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
+            className="w-full pl-9 pr-3 py-1.5 bg-surface-secondary dark:bg-[#0C0E12] border border-app rounded-lg text-xs text-app-primary placeholder:text-app-muted focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
         </div>
 
@@ -90,7 +82,7 @@ export default function EvidenceExplorerPage() {
             className={`px-2.5 py-1 rounded font-medium transition-colors ${
               selectedCategory === "all"
                 ? "bg-blue-600 text-white"
-                : "text-zinc-400 hover:text-zinc-200"
+                : "text-app-muted hover:text-app-primary hover:bg-surface-secondary"
             }`}
           >
             All Evidence ({mockEvidence.length})
@@ -103,7 +95,7 @@ export default function EvidenceExplorerPage() {
                 className={`px-2.5 py-1 rounded font-medium capitalize transition-colors ${
                   selectedCategory === cat
                     ? "bg-blue-600 text-white"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    : "text-app-muted hover:text-app-primary hover:bg-surface-secondary"
                 }`}
               >
                 {cat}
@@ -118,16 +110,15 @@ export default function EvidenceExplorerPage() {
         {filteredEvidence.map((ev) => (
           <div
             key={ev.id}
-            className="p-5 rounded-xl bg-[#111318] border border-[#262A33] hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4 group"
+            className="p-5 rounded-xl bg-surface-primary border border-app hover:border-slate-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4 group shadow-xs"
           >
             <div className="space-y-3">
-              {/* Header Badges */}
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                     {ev.competitorName}
                   </span>
-                  <span className="text-zinc-600">·</span>
+                  <span className="text-app-muted">·</span>
                   <CategoryBadge category={ev.category} />
                   <SeverityBadge severity={ev.severity} />
                 </div>
@@ -135,21 +126,18 @@ export default function EvidenceExplorerPage() {
                 <StatusBadge status={ev.verificationStatus} />
               </div>
 
-              {/* Title */}
-              <h3 className="text-base font-semibold text-zinc-100 group-hover:text-blue-200 transition-colors">
+              <h3 className="text-base font-semibold text-app-primary group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                 {ev.title}
               </h3>
 
-              {/* Before vs After Visual Snapshot */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {/* BEFORE */}
-                <div className="p-3 rounded-lg bg-[#0C0E12] border border-[#262A33] space-y-1.5 overflow-hidden">
-                  <div className="flex items-center justify-between font-mono text-[10px] text-red-400">
+                <div className="p-3 rounded-lg bg-surface-secondary border border-app space-y-1.5 overflow-hidden">
+                  <div className="flex items-center justify-between font-mono text-[10px] text-red-600 dark:text-red-400">
                     <span className="font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 dark:bg-red-400" />
                       BEFORE
                     </span>
-                    <span className="text-zinc-500">
+                    <span className="text-app-muted">
                       {new Date(ev.observedPreviousDate).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
@@ -157,19 +145,20 @@ export default function EvidenceExplorerPage() {
                       })}
                     </span>
                   </div>
-                  <div className="text-zinc-300 font-mono text-[11px] leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap">
-                    {ev.beforeContent}
-                  </div>
+                  <EvidenceStateText
+                    content={ev.beforeContent}
+                    variant="before"
+                    className="max-h-24 overflow-y-auto"
+                  />
                 </div>
 
-                {/* AFTER */}
-                <div className="p-3 rounded-lg bg-[#0C0E12] border border-[#262A33] space-y-1.5 overflow-hidden">
-                  <div className="flex items-center justify-between font-mono text-[10px] text-emerald-400">
+                <div className="p-3 rounded-lg bg-surface-secondary border border-app space-y-1.5 overflow-hidden">
+                  <div className="flex items-center justify-between font-mono text-[10px] text-emerald-700 dark:text-emerald-400">
                     <span className="font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                       AFTER
                     </span>
-                    <span className="text-zinc-500">
+                    <span className="text-app-muted">
                       {new Date(ev.observedCurrentDate).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
@@ -177,45 +166,43 @@ export default function EvidenceExplorerPage() {
                       })}
                     </span>
                   </div>
-                  <div className="text-zinc-200 font-mono text-[11px] leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap font-medium">
-                    {ev.afterContent}
-                  </div>
+                  <EvidenceStateText
+                    content={ev.afterContent}
+                    variant="after"
+                    className="max-h-24 overflow-y-auto"
+                  />
                 </div>
               </div>
 
-              {/* Meta information: Source, Method, Hash */}
-              <div className="p-3 rounded-lg bg-[#14171E] border border-[#262A33] space-y-1.5 text-xs">
+              <div className="p-3 rounded-lg bg-surface-secondary border border-app space-y-1.5 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-500 text-[11px]">Detection Engine:</span>
-                  <span className="text-zinc-300 font-mono text-[11px]">
-                    {ev.detectionMethod}
-                  </span>
+                  <span className="text-app-muted text-[11px]">Detection Engine:</span>
+                  <span className="text-app-secondary font-mono text-[11px]">{ev.detectionMethod}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-500 text-[11px]">Confidence Score:</span>
-                  <span className="text-emerald-400 font-mono font-bold text-[11px]">
+                  <span className="text-app-muted text-[11px]">Confidence Score:</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[11px]">
                     {ev.confidence}% Verified
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-500 text-[11px] flex items-center gap-1">
-                    <Hash className="w-3 h-3 text-zinc-500" />
+                  <span className="text-app-muted text-[11px] flex items-center gap-1">
+                    <Hash className="w-3 h-3" />
                     Hash:
                   </span>
-                  <span className="text-zinc-400 font-mono text-[10px] truncate max-w-[220px]">
+                  <span className="text-app-muted font-mono text-[10px] truncate max-w-[220px]">
                     {ev.hashDigest}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Actions */}
-            <div className="pt-3 border-t border-[#1F232D] flex items-center justify-between gap-3">
+            <div className="pt-3 border-t border-app flex items-center justify-between gap-3">
               <a
                 href={ev.sourceUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-zinc-400 hover:text-zinc-200 flex items-center gap-1 font-mono"
+                className="text-xs text-app-muted hover:text-app-primary flex items-center gap-1 font-mono"
               >
                 <span>Open Source</span>
                 <ExternalLink className="w-3 h-3" />

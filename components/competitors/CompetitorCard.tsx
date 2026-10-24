@@ -4,8 +4,9 @@ import React from "react";
 import { Competitor } from "../../lib/types";
 import { ThreatScoreBadge } from "../ui/ThreatScoreBadge";
 import { StatusBadge } from "../ui/Badge";
-import { ArrowRight, Clock, TrendingUp, TrendingDown, ExternalLink } from "lucide-react";
+import { ArrowRight, Clock, TrendingUp, TrendingDown, ExternalLink, Bot } from "lucide-react";
 import Link from "next/link";
+import { useApp } from "../../lib/context/AppContext";
 
 export function CompetitorCard({
   competitor,
@@ -14,6 +15,7 @@ export function CompetitorCard({
   competitor: Competitor;
   rank?: number;
 }) {
+  const { openChatWithPrompt } = useApp();
   return (
     <div className="p-5 sm:p-6 rounded-xl bg-[#111318] border border-[#262A33] hover:border-blue-500/40 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between group shadow-xs hover:shadow-lg relative overflow-hidden">
       {/* Top subtle highlight gradient on hover */}
@@ -116,13 +118,24 @@ export function CompetitorCard({
           <Clock className="w-3 h-3 text-zinc-500" />
           {competitor.lastScanTime}
         </span>
-        <Link
-          href={`/competitors/${competitor.id}`}
-          className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
-        >
-          <span>Deep Profile</span>
-          <ArrowRight className="w-3 h-3" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => openChatWithPrompt(`Analyze ${competitor.name}'s current threat level, recent pricing/feature mutations, and counter-tactics.`)}
+            className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 hover:scale-105 transition-transform cursor-pointer"
+            title={`Ask PRYSM AI Copilot about ${competitor.name}`}
+          >
+            <Bot className="w-3 h-3" />
+            <span className="hidden sm:inline">Ask AI</span>
+          </button>
+          <Link
+            href={`/competitors/${competitor.id}`}
+            className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
+          >
+            <span>Profile</span>
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
       </div>
     </div>
   );

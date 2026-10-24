@@ -73,7 +73,7 @@ const PRESET_SNAPSHOTS: Record<string, { before: TimeMachineSnapshot; after: Tim
       label: "Historical Snapshot (Apr 2025)",
       badge: "Legacy Baseline",
       tagline: "Next-generation developer assistant for fast code autocomplete.",
-      proPrice: "$39",
+      proPrice: "₹2,499",
       enterprisePrice: "Custom",
       features: [
         "Assisted Code Completion",
@@ -87,8 +87,8 @@ const PRESET_SNAPSHOTS: Record<string, { before: TimeMachineSnapshot; after: Tim
       label: "Current Verified Snapshot (Oct 2026)",
       badge: "Active Production",
       tagline: "Autonomous Agentic Software Engineering Platform.",
-      proPrice: "$49 (+25%)",
-      enterprisePrice: "$299",
+      proPrice: "₹3,199 (+28%)",
+      enterprisePrice: "₹24,999",
       features: [
         "Assisted Code Completion",
         "Basic Syntax Linting",

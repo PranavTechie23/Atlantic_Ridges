@@ -67,7 +67,7 @@ const PRESET_WAYBACK_TARGETS: Record<string, WaybackSnapshot[]> = {
       mimeType: "text/html",
       url: "https://web.archive.org/web/20250412100000/https://novaai.tech/pricing",
       digest: "sha256:3a4b9c1d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b",
-      pricingObserved: "Developer: Free | Pro: $39/mo | Enterprise: Custom",
+      pricingObserved: "Developer: Free | Pro: ₹2,499/mo | Enterprise: Custom",
     },
     {
       timestamp: "20261018140000",
@@ -76,7 +76,7 @@ const PRESET_WAYBACK_TARGETS: Record<string, WaybackSnapshot[]> = {
       mimeType: "text/html",
       url: "https://web.archive.org/web/20261018140000/https://novaai.tech/pricing",
       digest: "sha256:9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e",
-      pricingObserved: "Developer: Free (Rate limited) | Pro: $59/mo (+51%) | Enterprise: $299/mo",
+      pricingObserved: "Developer: Free (Rate limited) | Pro: ₹3,899/mo (+51%) | Enterprise: ₹24,999/mo",
     },
   ],
   "https://orbitcrm.com/pricing": [
@@ -87,7 +87,7 @@ const PRESET_WAYBACK_TARGETS: Record<string, WaybackSnapshot[]> = {
       mimeType: "text/html",
       url: "https://web.archive.org/web/20250110090000/https://orbitcrm.com/pricing",
       digest: "sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
-      pricingObserved: "Free Tier: 5 seats | Growth: $29/seat/mo | Scale: $79/seat/mo",
+      pricingObserved: "Free Tier: 5 seats | Growth: ₹2,399/seat/mo | Scale: ₹6,499/seat/mo",
     },
     {
       timestamp: "20261005110000",
@@ -96,7 +96,7 @@ const PRESET_WAYBACK_TARGETS: Record<string, WaybackSnapshot[]> = {
       mimeType: "text/html",
       url: "https://web.archive.org/web/20261005110000/https://orbitcrm.com/pricing",
       digest: "sha256:2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c",
-      pricingObserved: "Free Tier Deprecated | Starter: $49/seat/mo | Scale: $99/seat/mo",
+      pricingObserved: "Free Tier Deprecated | Starter: ₹3,199/seat/mo | Scale: ₹8,199/seat/mo",
     },
   ],
 };
@@ -133,7 +133,7 @@ const KAGGLE_DATASET_BENCHMARKS = [
     source: "Kaggle: B2B SaaS Global Pricing Index",
     recordsCount: "14,820 tiers",
     updatedDate: "Oct 2026",
-    medianPriceSaaS: "$49 / seat",
+    medianPriceSaaS: "₹3,199 / seat",
     topVector: "Autonomous Workflow Upselling",
     license: "CC BY-SA 4.0 (Open Permitted Public Data)",
   },
@@ -141,7 +141,7 @@ const KAGGLE_DATASET_BENCHMARKS = [
     source: "Kaggle: Cloud GPU & AI Token Price History",
     recordsCount: "3,410 model SKU benchmarks",
     updatedDate: "Sep 2026",
-    medianPriceSaaS: "$0.002 / 1k tokens",
+    medianPriceSaaS: "₹0.17 / 1k tokens",
     topVector: "Reasoning Token Premium Pricing",
     license: "Open Database License (ODbL)",
   },

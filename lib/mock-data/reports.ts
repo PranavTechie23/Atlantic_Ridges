@@ -92,7 +92,7 @@ export const mockReports: IntelligenceReport[] = [
       },
       {
         competitor: "NexaSuite",
-        shift: "Rebranding to Autonomous Operations OS backed by $28M Series B",
+        shift: "Rebranding to Autonomous Operations OS backed by ₹230 crore Series B",
         impactScore: 81,
         direction: "pivot",
       },

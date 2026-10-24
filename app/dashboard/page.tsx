@@ -8,11 +8,10 @@ import { MarketSignalChart } from "../../components/dashboard/MarketSignalChart"
 import { getChanges } from "../../lib/api";
 import { ChangeItem } from "../../lib/types";
 import { useApp } from "../../lib/context/AppContext";
-import { Building2, Zap, ShieldCheck, ArrowRight, Play, Sparkles } from "lucide-react";
+import { Building2, Zap, ShieldCheck, ArrowRight, Play, Sparkles, ScanSearch, FileCheck2, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { LivePulseIndicator } from "../../components/ui/LivePulseIndicator";
 import { Reveal, StaggerGrid } from "../../components/ui/Motion";
-import { GuestModeBanner } from "../../components/layout/GuestModeBanner";
 import { PrioritySignalsSkeleton } from "../../components/dashboard/PrioritySignalsSkeleton";
 import { DashboardQuickNav } from "../../components/dashboard/DashboardQuickNav";
 import { RoiCalculator } from "../../components/dashboard/RoiCalculator";
@@ -42,7 +41,6 @@ export default function DashboardPage() {
 
   return (
     <div className="relative space-y-8 pb-10 page-enter">
-      <GuestModeBanner />
       <div className="dashboard-ambient pointer-events-none absolute -top-10 left-1/3 -z-10 h-64 w-80 rounded-full bg-blue-500/10 blur-[100px] dark:bg-blue-600/12" />
       <div className="dashboard-ambient pointer-events-none absolute top-40 right-10 -z-10 h-56 w-72 rounded-full bg-indigo-500/8 blur-[90px] dark:bg-indigo-600/10" />
 
@@ -60,7 +58,7 @@ export default function DashboardPage() {
               Command Center
             </h1>
             <p className="text-sm text-app-secondary mt-1 max-w-lg">
-              High-impact signals across your monitored competitors.
+              Detect market moves early, verify every claim, and turn evidence into a clear next step.
               <span className="hidden sm:inline text-app-muted"> · Last scan {lastScanText}</span>
             </p>
             <div className="mt-4">
@@ -131,6 +129,33 @@ export default function DashboardPage() {
           minimal
         />
       </StaggerGrid>
+
+      <Reveal delay={80}>
+        <div className="dashboard-storyline dashboard-card relative overflow-hidden rounded-2xl p-4 sm:px-6 sm:py-5">
+          <div className="pointer-events-none absolute -right-10 -top-24 h-48 w-64 rounded-full bg-blue-500/10 blur-3xl" />
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <div className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-blue-500 dark:text-blue-300">From market noise to confident action</div>
+              <p className="mt-1 text-xs text-app-secondary">One connected workflow keeps the signal traceable from discovery to decision.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              {[
+                { label: "Detect", detail: "Public signals", Icon: ScanSearch },
+                { label: "Verify", detail: "Source evidence", Icon: FileCheck2 },
+                { label: "Decide", detail: "Strategic action", Icon: BrainCircuit },
+              ].map(({ label, detail, Icon }, index) => (
+                <React.Fragment key={label}>
+                  {index > 0 && <ArrowRight className="hidden h-3.5 w-3.5 text-app-muted sm:block" />}
+                  <div className="flex min-w-[132px] flex-1 items-center gap-2.5 rounded-xl border border-app bg-surface-primary/55 px-3 py-2.5 sm:flex-none">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-500/15 bg-blue-500/[0.08] text-blue-500 dark:text-blue-300"><Icon className="h-4 w-4" /></span>
+                    <span><span className="block text-xs font-semibold text-app-primary">{label}</span><span className="mt-0.5 block text-[10px] text-app-muted">{detail}</span></span>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Reveal>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-6 items-stretch">
         <section className="xl:col-span-8 flex flex-col space-y-4 min-h-0">

@@ -44,7 +44,7 @@ export const mockNotifications: NotificationItem[] = [
   {
     id: "notif-5",
     title: "Rebranded to Autonomous Operations OS",
-    description: "NexaSuite updated homepage messaging following $28M Series B round.",
+    description: "NexaSuite updated homepage messaging following ₹230 crore Series B round.",
     time: "4 days ago",
     severity: "HIGH",
     competitor: "NexaSuite",

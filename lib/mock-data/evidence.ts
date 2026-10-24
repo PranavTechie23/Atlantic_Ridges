@@ -13,40 +13,17 @@ export const mockEvidence: EvidenceItem[] = [
     observedCurrentDate: "2026-10-23T09:45:00Z",
     observedPreviousDate: "2026-10-22T18:00:00Z",
     sourceUrl: "https://acmecloud.io/pricing",
-    sourceTitle: "Acme Cloud Plans & Pricing Table (HTML DOM Element: #plan-pro-price)",
-    detectionMethod: "Structured price extraction & DOM subtree diffing",
+    sourceTitle: "Acme Cloud Plans & Pricing Table",
+    detectionMethod: "Structured price extraction & semantic field diffing",
     verificationStatus: "verified",
     hashDigest: "sha256:4f89a910ecb29381c818f9104882bcde7102eac694f6e",
-    beforeContent: `<div class="plan-card" id="plan-pro">
-  <h3 class="plan-title">Pro Plan</h3>
-  <div class="price-wrapper">
-    <span class="currency">₹</span>
-    <span class="amount">999</span>
-    <span class="period">/ month</span>
-  </div>
-  <p class="billing-note">Billed monthly or ₹849 billed annually</p>
-  <ul class="features">
-    <li>5 Team Seats included</li>
-    <li>Unlimited storage</li>
-    <li>Standard integrations</li>
-  </ul>
-</div>`,
-    afterContent: `<div class="plan-card" id="plan-pro">
-  <h3 class="plan-title">Pro Plan</h3>
-  <div class="price-wrapper">
-    <span class="currency">₹</span>
-    <span class="amount">1,299</span>
-    <span class="period">/ month</span>
-  </div>
-  <p class="billing-note">Billed monthly or ₹1,099 billed annually</p>
-  <ul class="features">
-    <li>5 Team Seats included</li>
-    <li>Unlimited storage</li>
-    <li>500 Automated Workflow Runs / mo <span class="badge">NEW</span></li>
-    <li>Standard integrations</li>
-  </ul>
-</div>`,
-    rawExcerpt: "Pro Plan price changed from ₹999/mo to ₹1,299/mo (+30%). New feature badge added: '500 Automated Workflow Runs / mo'.",
+    beforeContent: `Pro Plan — ₹999 / month (billed monthly)
+Annual billing equivalent: ₹849 / month
+Includes: 5 team seats, unlimited storage, standard integrations`,
+    afterContent: `Pro Plan — ₹1,299 / month (billed monthly)
+Annual billing equivalent: ₹1,099 / month
+Includes: 5 team seats, unlimited storage, 500 automated workflow runs / month (NEW), standard integrations`,
+    rawExcerpt: "Pro Plan price changed from ₹999/mo to ₹1,299/mo (+30%). New capability: 500 automated workflow runs per month.",
     strategicImplication: "Acme is leveraging the launch of their workflow canvas to test pricing elasticity. Their Pro plan is now 44% more expensive than our starter tier (₹899). We can capture churned users by running targeted Google Search ads on 'Acme Cloud alternative'.",
     recommendedAction: "Launch comparison landing page highlighting our ₹899 price lock and zero-code workflow automations.",
     userNotes: [
@@ -69,10 +46,10 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "NLP release parser & semantic entity extraction",
     verificationStatus: "verified",
     hashDigest: "sha256:7bc330198aaef4919020302bcf927492cfa710",
-    beforeContent: `<meta name="description" content="Nova AI: The generative assistant that drafts emails and summarizes meeting transcripts." />
-<h1 class="hero-title">Your team's AI writing partner</h1>`,
-    afterContent: `<meta name="description" content="Nova Copilot v3: Proactive enterprise agent supervisor that plans, executes, and confirms multi-system operational tasks." />
-<h1 class="hero-title">Autonomous execution for enterprise workflows</h1>`,
+    beforeContent: `Product positioning: "Your team's AI writing partner"
+Capabilities: Email drafting and meeting transcript summaries only`,
+    afterContent: `Product positioning: "Autonomous execution for enterprise workflows"
+Capabilities: Copilot v3 proactive agent supervisor — plans, executes, and confirms multi-system tasks across Salesforce, Jira, and Slack`,
     rawExcerpt: "Today we are releasing Nova Copilot v3. Unlike passive chatbots that wait for prompts, Copilot v3 monitors webhooks and autonomously executes workflows across Salesforce, Jira, and Slack without human intervention.",
     strategicImplication: "NovaAI is shifting category perception from basic LLM prompt wrappers into full Agentic Process Automation (APA). This will appeal heavily to enterprise buyers looking to cut operational headcount.",
     recommendedAction: "Accelerate our Q4 autonomous actions roadmap and highlight our deterministic audit trail in contrast to Nova's black-box agents.",
@@ -96,22 +73,10 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "DOM feature matrix diffing & structured token analysis",
     verificationStatus: "verified",
     hashDigest: "sha256:8892ca019fe8290bcdae6102874bb1a293817",
-    beforeContent: `<tr>
-  <td>API Daily Limit</td>
-  <td>50,000 requests / day (Overages: ₹50 per 10k)</td>
-</tr>
-<tr>
-  <td>Predictive Churn Scoring</td>
-  <td>Add-on module (₹15,000 / month)</td>
-</tr>`,
-    afterContent: `<tr>
-  <td>API Daily Limit</td>
-  <td><strong>Unmetered streaming access</strong> (No overage fees)</td>
-</tr>
-<tr>
-  <td>Predictive Churn Scoring</td>
-  <td><strong>Included native in Enterprise</strong></td>
-</tr>`,
+    beforeContent: `API daily limit: 50,000 requests / day (overages billed at ₹50 per 10k)
+Predictive churn scoring: Add-on module at ₹15,000 / month`,
+    afterContent: `API access: Unmetered streaming (no overage fees)
+Predictive churn scoring: Included natively in Enterprise tier`,
     rawExcerpt: "OrbitCRM removed the ₹15,000/mo add-on fee for Predictive Churn and replaced the 50,000 request API cap with unmetered access for Enterprise clients.",
     strategicImplication: "Orbit is protecting its large accounts against modern data stack alternatives by eliminating friction points in API billing.",
     recommendedAction: "Audit our API pricing tier to ensure our webhook quotas remain competitive for developers.",
@@ -133,14 +98,10 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "DOM numeric regex extractor",
     verificationStatus: "verified",
     hashDigest: "sha256:590219caec8198f219018471bdcca7291a271",
-    beforeContent: `<div class="tier-limits">
-  <span>Free Bandwidth: 100 GB / month</span>
-  <span>Soft throttle at threshold</span>
-</div>`,
-    afterContent: `<div class="tier-limits">
-  <span>Free Bandwidth: 50 GB / month</span>
-  <span class="warning">Hard cut-off requiring Pro upgrade</span>
-</div>`,
+    beforeContent: `Free tier bandwidth: 100 GB / month
+Policy: Soft throttle when quota is reached`,
+    afterContent: `Free tier bandwidth: 50 GB / month
+Policy: Hard cut-off — Pro upgrade required to continue service`,
     rawExcerpt: "Vertex Labs halved the free hobby quota to 50GB and instituted a hard cut-off wall.",
     strategicImplication: "Developer backlash noted on Hacker News (240 comments). Developers are actively looking for alternative edge hosting platforms.",
     recommendedAction: "Publish an instant migration guide for Vertex Labs developers with 1-click import.",
@@ -162,8 +123,8 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "Web crawler & DOM semantic analysis",
     verificationStatus: "verified",
     hashDigest: "sha256:1900287aedb7289190aaecf00129759283917",
-    beforeContent: `<div class="feature-overview">Keyword tagging and manual priority flagging.</div>`,
-    afterContent: `<div class="feature-overview">Real-time emotional sentiment scoring in 24 languages with instant manager alerts.</div>`,
+    beforeContent: `Support triage: Keyword tagging and manual priority flagging only`,
+    afterContent: `Support triage: Real-time emotional sentiment scoring in 24 languages with instant manager alerts (1–100 frustration score)`,
     rawExcerpt: "Automatically scores customer frustration level 1-100 across 24 languages.",
     strategicImplication: "Improves their enterprise appeal to cross-border D2C and consumer fintech clients.",
     recommendedAction: "Evaluate adding emotional telemetry to our customer interaction log.",
@@ -185,10 +146,10 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "Semantic embedding similarity & text diffing",
     verificationStatus: "verified",
     hashDigest: "sha256:3991028baadcf8892019941a9e88716381029",
-    beforeContent: `<title>NexaSuite | Cloud Accounting & Billing ERP</title>
-<h1>Cloud accounting and billing ERP software for Indian businesses</h1>`,
-    afterContent: `<title>NexaSuite | Autonomous Operations OS</title>
-<h1>The autonomous financial operations operating system for modern enterprises</h1>`,
+    beforeContent: `Brand: "Cloud Accounting & Billing ERP"
+Headline: Cloud accounting and billing ERP software for Indian businesses`,
+    afterContent: `Brand: "Autonomous Operations OS"
+Headline: The autonomous financial operations operating system for modern enterprises`,
     rawExcerpt: "Headline shift: 'Cloud accounting and billing ERP' -> 'The autonomous financial operations operating system for modern enterprises'.",
     strategicImplication: "Transitioning away from localized SME accounting into high-ticket global ERP deals.",
     recommendedAction: "Monitor whether they open offices in Singapore or Dubai.",
@@ -210,8 +171,8 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "Blog feed RSS and DOM screenshot analysis",
     verificationStatus: "verified",
     hashDigest: "sha256:66778901caeeff82910283719001bca2718",
-    beforeContent: `No visual automation builder. Only email notifications based on document edits.`,
-    afterContent: `Visual drag-and-drop workflow canvas supporting conditional branches, multi-app triggers, and approval chains.`,
+    beforeContent: `Automation: Email notifications on document edits only — no visual builder`,
+    afterContent: `Automation: Visual drag-and-drop workflow canvas with conditional branches, multi-app triggers, and approval chains`,
     rawExcerpt: "Build complex operational workflows in minutes with Acme Workflows drag-and-drop builder.",
     strategicImplication: "Acme is moving into our core process automation domain.",
     recommendedAction: "Stress test our workflow execution latency and UX to maintain product superiority.",
@@ -222,7 +183,7 @@ export const mockEvidence: EvidenceItem[] = [
     changeId: "ch-nova-02",
     competitorId: "comp-nova",
     competitorName: "NovaAI",
-    title: "NovaAI Pro seat price increased from $39 to $49",
+    title: "NovaAI Pro seat price increased from ₹2,499 to ₹3,199 / user / month",
     category: "pricing",
     severity: "HIGH",
     confidence: 95,
@@ -233,11 +194,11 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "Structured price extraction",
     verificationStatus: "verified",
     hashDigest: "sha256:22910398bbccfe9819203871900aef1283",
-    beforeContent: `<span class="price">$39</span><span class="unit">/ user / mo</span>`,
-    afterContent: `<span class="price">$49</span><span class="unit">/ user / mo</span>`,
-    rawExcerpt: "Pro seat cost bumped by $10 (+25.6%) coinciding with Copilot v3 release.",
+    beforeContent: `Pro seat: ₹2,499 / user / month (minimum 5 seats)`,
+    afterContent: `Pro seat: ₹3,199 / user / month (minimum 5 seats) — includes 10,000 autonomous reasoning tokens per seat`,
+    rawExcerpt: "Pro seat cost increased by ₹700 (+28%) coinciding with Copilot v3 release.",
     strategicImplication: "High willingness-to-pay demonstrated by their early enterprise cohort.",
-    recommendedAction: "Maintain our $35 price point to emphasize superior value-for-money.",
+    recommendedAction: "Maintain our ₹2,799 per-seat price point to emphasize superior value-for-money.",
     userNotes: [],
   },
   {
@@ -256,8 +217,8 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "Legal disclaimer DOM crawler",
     verificationStatus: "verified",
     hashDigest: "sha256:8819203881caef9001928371bdca881729",
-    beforeContent: `<p class="terms">Enterprise tier available on annual contracts without seat minimums.</p>`,
-    afterContent: `<p class="terms">Enterprise tier requires a minimum of 10 seats on annual agreement (₹744,000 / year base).</p>`,
+    beforeContent: `Enterprise tier: Available on annual contracts with no seat minimum`,
+    afterContent: `Enterprise tier: Minimum 10 seats on annual agreement (₹744,000 / year base commitment)`,
     rawExcerpt: "Minimum commitment established at 10 seats for Enterprise tier.",
     strategicImplication: "Leaves mid-market companies with 3-9 users stranded without advanced features.",
     recommendedAction: "Launch 'No Minimum Seat Commitment' campaign targeted at Orbit prospects.",
@@ -268,7 +229,7 @@ export const mockEvidence: EvidenceItem[] = [
     changeId: "ch-nexa-02",
     competitorId: "comp-nexa",
     competitorName: "NexaSuite",
-    title: "NexaSuite closed $28M Series B round",
+    title: "NexaSuite closed ₹230 crore Series B round",
     category: "announcements",
     severity: "HIGH",
     confidence: 99,
@@ -279,9 +240,9 @@ export const mockEvidence: EvidenceItem[] = [
     detectionMethod: "News RSS & verified SEC/MCA corporate filing match",
     verificationStatus: "verified",
     hashDigest: "sha256:99001827caecff1892019947bbde881029",
-    beforeContent: `Total raised: $12M`,
-    afterContent: `Total raised: $40M after $28M Series B led by Peak Partners`,
-    rawExcerpt: "NexaSuite secures $28M Series B to build autonomous operations OS for global enterprises.",
+    beforeContent: `Total capital raised: ₹95 crore (Seed + Series A)`,
+    afterContent: `Total capital raised: ₹325 crore after ₹230 crore Series B led by Peak Partners`,
+    rawExcerpt: "NexaSuite secures ₹230 crore Series B to build autonomous operations OS for global enterprises.",
     strategicImplication: "Substantial cash reserves will fuel aggressive outbound SDR hiring.",
     recommendedAction: "Strengthen our product moat in automated reconciliations.",
     userNotes: [],

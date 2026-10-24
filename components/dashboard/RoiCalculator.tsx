@@ -21,7 +21,7 @@ export function RoiCalculator() {
 
   // Churn protection: 1 deal saved per year per 6 competitors monitored
   const dealsProtected = Math.max(1, Math.round(competitors / 6));
-  const estimatedRevenueProtected = dealsProtected * 45000; // $45k average ACV
+  const estimatedRevenueProtected = dealsProtected * 3750000; // ₹37.5L average ACV
 
   const handleCompetitorChange = (val: number) => {
     setCompetitors(val);
@@ -90,7 +90,7 @@ export function RoiCalculator() {
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs">
             <span className="text-zinc-300 font-medium">Blended Analyst / Strategist Rate</span>
-            <span className="font-mono font-bold text-emerald-400 text-sm">${analystHourlyRate} / hr</span>
+            <span className="font-mono font-bold text-emerald-400 text-sm">₹{analystHourlyRate} / hr</span>
           </div>
           <input
             type="range"
@@ -102,9 +102,9 @@ export function RoiCalculator() {
             className="w-full accent-emerald-500 h-1.5 bg-[#1E232E] rounded-lg cursor-pointer"
           />
           <div className="flex justify-between text-[10px] font-mono text-zinc-500">
-            <span>$40 / hr</span>
-            <span>$120 / hr</span>
-            <span>$250 / hr</span>
+            <span>₹800 / hr</span>
+            <span>₹2,400 / hr</span>
+            <span>₹5,000 / hr</span>
           </div>
         </div>
       </div>
@@ -132,7 +132,7 @@ export function RoiCalculator() {
             <DollarSign className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-black font-mono text-emerald-400">
-            $<AnimatedCounter value={annualCostSavings} />
+            ₹<AnimatedCounter value={annualCostSavings} />
           </div>
           <p className="text-[11px] text-zinc-400 mt-1">
             Straight-line operational savings on manual research
@@ -160,7 +160,7 @@ export function RoiCalculator() {
             <ShieldCheck className="w-4 h-4 text-purple-400" />
           </div>
           <div className="text-2xl font-black font-mono text-purple-300">
-            $<AnimatedCounter value={estimatedRevenueProtected} />
+            ₹<AnimatedCounter value={estimatedRevenueProtected} />
           </div>
           <p className="text-[11px] text-zinc-400 mt-1">
             ~{dealsProtected} enterprise renewals safeguarded via timely counter-offers
@@ -191,7 +191,7 @@ export function RoiCalculator() {
               <span className="font-mono text-[11px]">~4 Minutes</span>
             </div>
             <p className="text-zinc-300 text-[11px] leading-relaxed">
-              Min 0: DOM crawler detects $79 → $109 diff. Min 1: AST noise filter validates pricing node. Min 2: Merkle hash generated. Min 4: Alert dispatched to Slack & sales playbook auto-generated.
+              Min 0: Crawler detects ₹999 → ₹1,299 pricing shift. Min 1: Noise filter validates pricing field. Min 2: Merkle hash generated. Min 4: Alert dispatched to Slack & sales playbook auto-generated.
             </p>
           </div>
         </div>
