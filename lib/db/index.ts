@@ -10,13 +10,24 @@ const connectionString =
   process.env.DATABASE_URL ||
   "postgresql://postgres:root123@localhost:5432/prysm";
 
+const isLocalhost =
+  connectionString.includes("localhost") ||
+  connectionString.includes("127.0.0.1") ||
+  connectionString.includes("host.docker.internal");
+
+const useSsl =
+  process.env.DATABASE_SSL === "true" ||
+  (!isLocalhost && process.env.DATABASE_SSL !== "false") ||
+  connectionString.includes("sslmode=require");
+
 export const pool =
   global._pgPool ||
   new Pool({
     connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
     max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    connectionTimeoutMillis: 10000,
   });
 
 if (process.env.NODE_ENV !== "production") {

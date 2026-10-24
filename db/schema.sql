@@ -179,7 +179,26 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 12. CRAWLER RAW SNAPSHOTS (Storage Registry)
+-- 12. PLATFORM USERS (Auth — scrypt password hashes only)
+CREATE TABLE IF NOT EXISTS prysm_users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(320) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    password_hash TEXT NOT NULL,
+    plan VARCHAR(100) DEFAULT 'Pro Intelligence',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    last_login_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS auth_security_events (
+    id SERIAL PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    email_attempt VARCHAR(320),
+    success BOOLEAN NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 13. CRAWLER RAW SNAPSHOTS (Storage Registry)
 CREATE TABLE IF NOT EXISTS snapshots (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     competitor_id VARCHAR(64) REFERENCES competitors(id) ON DELETE CASCADE,

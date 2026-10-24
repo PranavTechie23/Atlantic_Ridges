@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { pool } from "../lib/db";
 import {
   realCompetitors,
@@ -6,6 +8,11 @@ import {
   realReports,
   realNotifications,
 } from "../db/real-data";
+import { upsertSeedUser } from "../lib/auth/user-store";
+import {
+  JUDGE_DEMO_EMAIL,
+  JUDGE_DEMO_PASSWORD_HINT,
+} from "../lib/auth/demo-access";
 
 async function seed() {
   console.log("🌱 Starting PRYSM Real-World Intelligence Seeder...");
@@ -14,6 +21,14 @@ async function seed() {
 
   try {
     await client.query("BEGIN");
+
+    // Ensure schema tables exist first (for fresh remote/cloud PostgreSQL instances)
+    console.log("📐 Ensuring database schema exists...");
+    const schemaPath = path.join(__dirname, "../db/schema.sql");
+    if (fs.existsSync(schemaPath)) {
+      const schemaSql = fs.readFileSync(schemaPath, "utf-8");
+      await client.query(schemaSql);
+    }
 
     // Clear existing data in topological order
     console.log("🧹 Clearing old database records...");
@@ -346,6 +361,21 @@ async function seed() {
     }
 
     await client.query("COMMIT");
+    console.log("🔐 Seeding HackNova judge workspace credentials (scrypt hashed)...");
+    await upsertSeedUser({
+      email: JUDGE_DEMO_EMAIL,
+      name: "HackNova Judge",
+      password: JUDGE_DEMO_PASSWORD_HINT,
+      plan: "Enterprise Demo",
+    });
+    await upsertSeedUser({
+      email: "demo@prysm.io",
+      name: "PRYSM Demo Admin",
+      password: "Demo2026!",
+      plan: "Enterprise Demo",
+    });
+    console.log(`   Judge login → ${JUDGE_DEMO_EMAIL} / ${JUDGE_DEMO_PASSWORD_HINT}`);
+
     console.log("✅ PRYSM Real-World Intelligence Dataset Successfully Loaded into PostgreSQL!");
   } catch (error) {
     await client.query("ROLLBACK");
