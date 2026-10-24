@@ -17,17 +17,17 @@ export function SeverityBadge({
   className?: string;
 }) {
   const styles = {
-    CRITICAL: "bg-red-500/10 text-red-400 border-red-500/30",
-    HIGH: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-    MEDIUM: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-    LOW: "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
+    CRITICAL: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30",
+    HIGH: "bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-500/30",
+    MEDIUM: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30",
+    LOW: "bg-slate-500/10 text-slate-600 dark:text-zinc-400 border-slate-500/25 dark:border-zinc-500/30",
   }[severity];
 
   const dot = {
-    CRITICAL: "bg-red-400",
-    HIGH: "bg-amber-400",
-    MEDIUM: "bg-blue-400",
-    LOW: "bg-zinc-400",
+    CRITICAL: "bg-red-500 dark:bg-red-400",
+    HIGH: "bg-amber-500 dark:bg-amber-400",
+    MEDIUM: "bg-blue-500 dark:bg-blue-400",
+    LOW: "bg-slate-500 dark:bg-zinc-400",
   }[severity];
 
   return (
@@ -60,11 +60,11 @@ export function CategoryBadge({
   };
 
   const colors: Record<ChangeCategory, string> = {
-    pricing: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
-    features: "bg-indigo-500/10 text-indigo-300 border-indigo-500/20",
-    launch: "bg-violet-500/10 text-violet-300 border-violet-500/20",
-    positioning: "bg-sky-500/10 text-sky-300 border-sky-500/20",
-    announcements: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+    pricing: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/25 dark:border-emerald-500/20",
+    features: "bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 border-indigo-500/25 dark:border-indigo-500/20",
+    launch: "bg-violet-500/10 text-violet-800 dark:text-violet-300 border-violet-500/25 dark:border-violet-500/20",
+    positioning: "bg-sky-500/10 text-sky-800 dark:text-sky-300 border-sky-500/25 dark:border-sky-500/20",
+    announcements: "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/25 dark:border-amber-500/20",
   };
 
   return (
@@ -88,11 +88,11 @@ export function StatusBadge({
   className?: string;
 }) {
   const styles = {
-    active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-    verified: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-    pending: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-    paused: "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
-    flagged: "bg-red-500/10 text-red-400 border-red-500/30",
+    active: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30",
+    verified: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30",
+    pending: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30",
+    paused: "bg-slate-500/10 text-slate-600 dark:text-zinc-400 border-slate-500/25 dark:border-zinc-500/30",
+    flagged: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30",
   }[status];
 
   return (

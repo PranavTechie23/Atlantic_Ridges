@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowUp, Play, RefreshCw, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { ArrowUp, Play, RefreshCw, Volume2, VolumeX, Sparkles, Bot } from "lucide-react";
 import Link from "next/link";
 import { useApp } from "@/lib/context/AppContext";
 import { sounds } from "@/lib/utils/sound";
 
 export function FloatingQuickActions() {
-  const { openScanModal } = useApp();
+  const { openScanModal, openChat } = useApp();
   const [isVisible, setIsVisible] = useState(false);
   const [soundOn, setSoundOn] = useState(() => sounds.isEnabled());
 
@@ -37,7 +37,18 @@ export function FloatingQuickActions() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2 p-1.5 rounded-full bg-[#111318]/90 border border-[#262A33] backdrop-blur-xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-6 right-24 sm:right-26 z-35 flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-full bg-[#111318]/90 border border-[#262A33] backdrop-blur-xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-300">
+      <button
+        onClick={() => {
+          sounds.playChirp();
+          openChat();
+        }}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-linear-to-r from-blue-600/30 to-indigo-600/30 border border-blue-500/40 text-blue-300 text-xs font-bold hover:scale-105 transition-all shadow-md cursor-pointer"
+        title="Open PRYSM AI Copilot (⌘J)"
+      >
+        <Bot className="w-3.5 h-3.5 text-cyan-400" />
+        <span className="hidden sm:inline">Copilot</span>
+      </button>
       <Link
         href="/audit"
         onClick={() => sounds.playChirp()}
