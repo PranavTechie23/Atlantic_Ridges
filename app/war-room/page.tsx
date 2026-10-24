@@ -61,7 +61,7 @@ const PRESET_WAR_ROOM_SCENARIOS: SimulationScenario[] = [
     counterAction: "Deploy value-added security compliance bundling without direct price matching.",
     playbookSteps: [
       "Launch immediate Price-Lock Guarantee campaign for existing contract renewals.",
-      "Bundle SOC-2 & HIPAA compliance add-on (valued at $500/mo) for free into standard tier.",
+      "Bundle SOC-2 & HIPAA compliance add-on (valued at ₹41,500/mo) for free into standard tier.",
       "Equip outbound sales teams with TCO (Total Cost of Ownership) comparison calculator.",
     ],
   },
@@ -87,7 +87,7 @@ const PRESET_WAR_ROOM_SCENARIOS: SimulationScenario[] = [
     title: "OrbitCRM Acquires Workflow Automation Startup",
     competitor: "OrbitCRM",
     category: "m&a",
-    description: "Orbit closes $45M acquisition of ZapFlow to consolidate native automation.",
+    description: "Orbit closes ₹375 crore acquisition of ZapFlow to consolidate native automation.",
     priceDeltaPercent: 10,
     featureJumpScore: 20,
     marketShareShift: -2.9,
