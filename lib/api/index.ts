@@ -340,3 +340,24 @@ export async function injectSimulatedChange(payload: {
     updatedCompetitor: updatedComp,
   };
 }
+
+export async function dispatchWarRoomDirective(payload: {
+  competitorName: string;
+  scenarioTitle: string;
+  counterAction: string;
+  arrRiskK: number;
+}): Promise<NotificationItem> {
+  await new Promise((r) => setTimeout(r, 120));
+  const newNotification: NotificationItem = {
+    id: `notif-wr-${Date.now()}`,
+    title: `War Room Playbook Deployed: vs ${payload.competitorName}`,
+    description: `Tactical Directive Active: "${payload.counterAction}". Projected $${payload.arrRiskK}k ARR defended.`,
+    time: "Just now",
+    severity: "CRITICAL",
+    competitor: payload.competitorName,
+    read: false,
+  };
+
+  activeNotifications = [newNotification, ...activeNotifications];
+  return newNotification;
+}

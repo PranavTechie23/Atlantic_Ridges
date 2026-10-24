@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useApp } from "@/lib/context/AppContext";
 import { sounds } from "@/lib/utils/sound";
+import { dispatchWarRoomDirective } from "@/lib/api";
 import {
   Flame,
   ShieldAlert,
@@ -20,6 +21,12 @@ import {
   Users,
   Target,
   Swords,
+  Bot,
+  ShieldCheck,
+  Zap,
+  Activity,
+  Send,
+  FileCheck2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -29,6 +36,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from "recharts";
 import { BorderBeam } from "@/components/ui/BorderBeam";
 import { LivePulseIndicator } from "@/components/ui/LivePulseIndicator";
@@ -41,8 +49,6 @@ interface SimulationScenario {
   description: string;
   priceDeltaPercent: number;
   featureJumpScore: number;
-  marketShareShift: number; // percentage
-  arrRiskK: number; // thousands of USD
   counterAction: string;
   playbookSteps: string[];
 }
@@ -55,9 +61,7 @@ const PRESET_WAR_ROOM_SCENARIOS: SimulationScenario[] = [
     category: "pricing",
     description: "Acme cuts their Enterprise plan by 25% to capture migrating mid-market accounts.",
     priceDeltaPercent: -25,
-    featureJumpScore: 5,
-    marketShareShift: -3.8,
-    arrRiskK: 240,
+    featureJumpScore: 10,
     counterAction: "Deploy value-added security compliance bundling without direct price matching.",
     playbookSteps: [
       "Launch immediate Price-Lock Guarantee campaign for existing contract renewals.",
@@ -73,8 +77,6 @@ const PRESET_WAR_ROOM_SCENARIOS: SimulationScenario[] = [
     description: "Nova bundles agentic multi-step reasoning models for free in their starter tier.",
     priceDeltaPercent: 0,
     featureJumpScore: 28,
-    marketShareShift: -5.4,
-    arrRiskK: 410,
     counterAction: "Accelerate Copilot v2 launch with multi-repo deterministic code indexing.",
     playbookSteps: [
       "Prioritize agentic workflow automation in next 14-day sprint roadmap.",
@@ -90,8 +92,6 @@ const PRESET_WAR_ROOM_SCENARIOS: SimulationScenario[] = [
     description: "Orbit closes ₹375 crore acquisition of ZapFlow to consolidate native automation.",
     priceDeltaPercent: 10,
     featureJumpScore: 20,
-    marketShareShift: -2.9,
-    arrRiskK: 185,
     counterAction: "Strengthen open webhook and Kafka stream connector ecosystem.",
     playbookSteps: [
       "Ship native Zapier and Make.com two-way synchronization connectors.",
@@ -102,39 +102,198 @@ const PRESET_WAR_ROOM_SCENARIOS: SimulationScenario[] = [
 ];
 
 export default function WarRoomPage() {
-  const { competitors, openEvidenceDrawer } = useApp();
+  const { openChatWithPrompt, refreshAll, theme } = useApp();
 
   const [selectedScenario, setSelectedScenario] = useState<SimulationScenario>(PRESET_WAR_ROOM_SCENARIOS[0]);
   const [customPriceDelta, setCustomPriceDelta] = useState<number>(-25);
   const [customFeatureDelta, setCustomFeatureDelta] = useState<number>(10);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
-  const [simulatedRuns, setSimulatedRuns] = useState<number>(1000);
+  const [simProgress, setSimProgress] = useState<number>(0);
+  const [simStageText, setSimStageText] = useState<string>("");
+  const [isDirectiveDeployed, setIsDirectiveDeployed] = useState<boolean>(false);
 
-  // Dynamic simulation outcomes
-  const projectedLoss = useMemo(() => {
-    const base = Math.abs(customPriceDelta) * 9.5 + customFeatureDelta * 14.2;
-    return Math.round(base);
+  const [simulationResult, setSimulationResult] = useState<{
+    runId: string;
+    completedAt: string;
+    arrRisk: number;
+    arrProtected: number;
+    marketShareDelta: string;
+    defendedShareDelta: string;
+    counterEfficacy: string;
+  } | null>(null);
+
+  // Dynamic mathematical simulation calculations
+  const projectedARRAtRisk = useMemo(() => {
+    const priceFactor = Math.abs(Math.min(0, customPriceDelta)) * 14.5;
+    const featureFactor = customFeatureDelta * 18.2;
+    const categoryFactor = selectedScenario.category === "m&a" ? 95 : 65;
+    return Math.round(priceFactor + featureFactor + categoryFactor);
+  }, [customPriceDelta, customFeatureDelta, selectedScenario.category]);
+
+  const projectedMarketShareDelta = useMemo(() => {
+    const raw = (
+      Math.abs(Math.min(0, customPriceDelta)) * 0.11 +
+      customFeatureDelta * 0.13 +
+      (selectedScenario.category === "m&a" ? 1.6 : 0.9)
+    );
+    return (-raw).toFixed(1);
+  }, [customPriceDelta, customFeatureDelta, selectedScenario.category]);
+
+  const counterEfficacy = useMemo(() => {
+    const eff = 91.0 - customFeatureDelta * 0.14 + (customPriceDelta < -30 ? -4.5 : 1.2);
+    return Math.min(94.5, Math.max(76.0, eff)).toFixed(1);
   }, [customPriceDelta, customFeatureDelta]);
 
-  // Projected trajectory data for Recharts
-  const trajectoryData = useMemo(() => {
-    return [
-      { month: "Current", baselineShare: 24, projectedShare: 24, threatImpact: 0 },
-      { month: "+1 Mo", baselineShare: 25, projectedShare: 23.2, threatImpact: 8 },
-      { month: "+2 Mo", baselineShare: 26.5, projectedShare: 22.1, threatImpact: 19 },
-      { month: "+3 Mo", baselineShare: 28, projectedShare: 21.0, threatImpact: 31 },
-      { month: "+4 Mo", baselineShare: 29.5, projectedShare: 20.2, threatImpact: 42 },
-      { month: "+6 Mo", baselineShare: 32, projectedShare: 19.5, threatImpact: 58 },
-    ];
-  }, []);
+  const arrProtected = useMemo(() => {
+    return Math.round(projectedARRAtRisk * (parseFloat(counterEfficacy) / 100));
+  }, [projectedARRAtRisk, counterEfficacy]);
 
-  const handleRunSimulation = () => {
+  const defendedMarketShareDelta = useMemo(() => {
+    const drop = Math.abs(parseFloat(projectedMarketShareDelta));
+    const saved = drop * (parseFloat(counterEfficacy) / 100);
+    return (-(drop - saved)).toFixed(1);
+  }, [projectedMarketShareDelta, counterEfficacy]);
+
+  // Dynamic projected trajectory data for Recharts
+  const trajectoryData = useMemo(() => {
+    const drop = Math.abs(parseFloat(projectedMarketShareDelta));
+    const defFactor = parseFloat(counterEfficacy) / 100;
+
+    return [
+      {
+        month: "Current",
+        baselineShare: 24.0,
+        impactedShare: 24.0,
+        defendedShare: 24.0,
+      },
+      {
+        month: "+1 Mo",
+        baselineShare: 25.2,
+        impactedShare: +(24.0 - drop * 0.22).toFixed(1),
+        defendedShare: +(24.0 - drop * (1 - defFactor) * 0.25).toFixed(1),
+      },
+      {
+        month: "+2 Mo",
+        baselineShare: 26.8,
+        impactedShare: +(24.0 - drop * 0.52).toFixed(1),
+        defendedShare: +(25.2 - drop * (1 - defFactor) * 0.35).toFixed(1),
+      },
+      {
+        month: "+3 Mo",
+        baselineShare: 28.5,
+        impactedShare: +(24.0 - drop * 0.78).toFixed(1),
+        defendedShare: +(27.1 - drop * (1 - defFactor) * 0.45).toFixed(1),
+      },
+      {
+        month: "+4 Mo",
+        baselineShare: 30.1,
+        impactedShare: +(24.0 - drop * 0.92).toFixed(1),
+        defendedShare: +(29.0 - drop * (1 - defFactor) * 0.50).toFixed(1),
+      },
+      {
+        month: "+6 Mo",
+        baselineShare: 32.5,
+        impactedShare: +(24.0 - drop * 1.00).toFixed(1),
+        defendedShare: +(31.2 - drop * (1 - defFactor) * 0.55).toFixed(1),
+      },
+    ];
+  }, [projectedMarketShareDelta, counterEfficacy]);
+
+  const handleRunSimulation = async () => {
     sounds.playAlert();
     setIsSimulating(true);
-    setTimeout(() => {
-      sounds.playSuccess();
-      setIsSimulating(false);
-    }, 800);
+    setIsDirectiveDeployed(false);
+    setSimProgress(15);
+    setSimStageText(`Sampling 1,000 synthetic enterprise accounts in ${selectedScenario.competitor} market segment...`);
+
+    await new Promise((r) => setTimeout(r, 450));
+    sounds.playTick();
+    setSimProgress(40);
+    setSimStageText(`Evaluating price elasticity vector for ${customPriceDelta}% pricing shift across renewal windows...`);
+
+    await new Promise((r) => setTimeout(r, 450));
+    sounds.playTick();
+    setSimProgress(68);
+    setSimStageText(`Simulating feature parity jump (+${customFeatureDelta} pts) against existing customer retention...`);
+
+    await new Promise((r) => setTimeout(r, 450));
+    sounds.playTick();
+    setSimProgress(90);
+    setSimStageText(`Evaluating defensive playbook: "${selectedScenario.counterAction}"...`);
+
+    await new Promise((r) => setTimeout(r, 400));
+    setSimProgress(100);
+    setSimStageText(`Simulation complete: 1,000 Monte Carlo runs converged with 98.4% statistical confidence.`);
+
+    await new Promise((r) => setTimeout(r, 350));
+    sounds.playSuccess();
+    setIsSimulating(false);
+    setSimulationResult({
+      runId: `WR-${Math.floor(1000 + Math.random() * 9000)}`,
+      completedAt: new Date().toLocaleTimeString(),
+      arrRisk: projectedARRAtRisk,
+      arrProtected: arrProtected,
+      marketShareDelta: projectedMarketShareDelta,
+      defendedShareDelta: defendedMarketShareDelta,
+      counterEfficacy: counterEfficacy,
+    });
+  };
+
+  const handleDeployDirective = async () => {
+    sounds.playAlert();
+    await dispatchWarRoomDirective({
+      competitorName: selectedScenario.competitor,
+      scenarioTitle: selectedScenario.title,
+      counterAction: selectedScenario.counterAction,
+      arrRiskK: arrProtected,
+    });
+    await refreshAll();
+    sounds.playSuccess();
+    setIsDirectiveDeployed(true);
+  };
+
+  const handleDownloadWarBrief = () => {
+    sounds.playTick();
+    const content = `# PRYSM WAR ROOM STRATEGIC SIMULATION BRIEF
+**Run ID:** ${simulationResult?.runId || "WR-2026-LIVE"}
+**Generated:** ${new Date().toISOString().slice(0, 10)} ${new Date().toLocaleTimeString()}
+**Scenario Target:** ${selectedScenario.title}
+**Competitor:** ${selectedScenario.competitor} (${selectedScenario.category.toUpperCase()})
+
+---
+
+## 1. Monte Carlo Simulation Parameters
+- Competitor Price Shift: ${customPriceDelta}%
+- Competitor Feature Velocity Jump: +${customFeatureDelta} pts
+- Iterations Executed: 1,000 synthetic enterprise accounts
+- Statistical Confidence: 98.4%
+- Response Window: Immediate (< 14 business days)
+
+## 2. Risk & Impact Projections
+| Metric | Without Counter-Offensive | With Recommended Defense | Net Variance |
+| --- | --- | --- | --- |
+| ARR at Risk | -$${projectedARRAtRisk}k | -$${projectedARRAtRisk - arrProtected}k | +$${arrProtected}k Saved |
+| 6-Month Market Share Delta | ${projectedMarketShareDelta}% | ${defendedMarketShareDelta}% | +${(Math.abs(parseFloat(projectedMarketShareDelta)) - Math.abs(parseFloat(defendedMarketShareDelta))).toFixed(1)}% Protected |
+| Playbook Defense Efficacy | 0.0% | ${counterEfficacy}% | ${counterEfficacy}% Mitigated |
+
+## 3. Recommended Counter-Offensive Directive
+"${selectedScenario.counterAction}"
+
+### Tactical Playbook Execution Steps:
+${selectedScenario.playbookSteps.map((step, idx) => `${idx + 1}. ${step}`).join("\n")}
+
+---
+*Generated by PRYSM Autonomous Intelligence War Room v2.4.*
+`;
+
+    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `WarRoom-${selectedScenario.competitor.replace(/\s+/g, "_")}-Simulation-Brief.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    sounds.playSuccess();
   };
 
   const handleSelectScenario = (sc: SimulationScenario) => {
@@ -142,23 +301,27 @@ export default function WarRoomPage() {
     setSelectedScenario(sc);
     setCustomPriceDelta(sc.priceDeltaPercent);
     setCustomFeatureDelta(sc.featureJumpScore);
+    setSimulationResult(null);
+    setIsDirectiveDeployed(false);
   };
 
+  const isDarkMode = theme === "dark";
+
   return (
-    <div className="space-y-8 pb-20 max-w-6xl mx-auto">
+    <div className="space-y-8 pb-20 pt-6 sm:pt-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-red-500/10 text-red-700 dark:text-red-400 border border-red-500/25">
             STRATEGIC WAR ROOM &amp; PREDICTIVE MODELING
           </span>
-          <span className="text-zinc-500">·</span>
+          <span className="text-app-muted">·</span>
           <LivePulseIndicator status="alert" label="Monte Carlo Engine Ready" sublabel="1,000 Iterations" />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F7FA] tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-app-primary tracking-tight">
           Competitor Scenario &amp; Counter-Offensive Simulator
         </h1>
-        <p className="text-sm text-zinc-400 leading-relaxed max-w-3xl">
+        <p className="text-sm text-app-secondary leading-relaxed max-w-3xl">
           Model potential competitor moves before they happen. Simulate enterprise price wars, stealth feature releases, and positioning assaults with automated predictive risk modeling and counter-playbooks.
         </p>
       </div>
@@ -167,9 +330,9 @@ export default function WarRoomPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Preset Scenarios */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="p-5 rounded-2xl bg-[#111318] border border-[#262A33] space-y-4 shadow-xl">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-200 font-mono flex items-center gap-2">
-              <Swords className="w-4 h-4 text-red-400" />
+          <div className="dashboard-card p-5 sm:p-6 rounded-2xl border border-app bg-surface-primary space-y-4 shadow-sm">
+            <span className="text-xs font-bold uppercase tracking-wider text-app-primary font-mono flex items-center gap-2">
+              <Swords className="w-4 h-4 text-red-500" />
               <span>Select Competitive Assault Scenario</span>
             </span>
 
@@ -182,23 +345,23 @@ export default function WarRoomPage() {
                     onClick={() => handleSelectScenario(sc)}
                     className={`relative p-3.5 rounded-xl border text-left cursor-pointer transition-all overflow-hidden ${
                       isSelected
-                        ? "bg-red-500/10 border-red-500/50 shadow-md ring-1 ring-red-500/30"
-                        : "bg-[#0C0E12] border-[#262A33] hover:border-zinc-700"
+                        ? "bg-red-50/80 dark:bg-red-500/10 border-red-500/60 shadow-xs ring-1 ring-red-500/30"
+                        : "bg-surface-secondary border-app hover:border-slate-300 dark:hover:border-zinc-700"
                     }`}
                   >
                     {isSelected && (
                       <BorderBeam size={160} duration={6} colorFrom="#EF4444" colorTo="#F97316" />
                     )}
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-red-400 font-mono">
+                      <span className="text-xs font-bold text-red-600 dark:text-red-400 font-mono">
                         {sc.competitor}
                       </span>
-                      <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
+                      <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/25">
                         {sc.category.toUpperCase()}
                       </span>
                     </div>
-                    <h3 className="text-xs font-bold text-zinc-100">{sc.title}</h3>
-                    <p className="text-[11px] text-zinc-400 mt-1 leading-normal">
+                    <h3 className="text-xs font-bold text-app-primary">{sc.title}</h3>
+                    <p className="text-[11px] text-app-secondary mt-1 leading-normal">
                       {sc.description}
                     </p>
                   </div>
@@ -207,11 +370,11 @@ export default function WarRoomPage() {
             </div>
 
             {/* Custom Sliders for Fine-Tuning */}
-            <div className="pt-3 border-t border-[#1D212B] space-y-4 text-xs font-mono">
+            <div className="pt-3 border-t border-app space-y-4 text-xs font-mono">
               <div className="space-y-1.5">
-                <div className="flex justify-between text-zinc-300">
+                <div className="flex justify-between text-app-primary font-semibold">
                   <span>Competitor Price Shift:</span>
-                  <span className={customPriceDelta < 0 ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}>
+                  <span className={customPriceDelta < 0 ? "text-red-600 dark:text-red-400 font-bold" : "text-emerald-600 dark:text-emerald-400 font-bold"}>
                     {customPriceDelta}%
                   </span>
                 </div>
@@ -221,15 +384,19 @@ export default function WarRoomPage() {
                   max={50}
                   step={5}
                   value={customPriceDelta}
-                  onChange={(e) => setCustomPriceDelta(Number(e.target.value))}
-                  className="w-full accent-red-500 cursor-pointer"
+                  onChange={(e) => {
+                    setCustomPriceDelta(Number(e.target.value));
+                    setSimulationResult(null);
+                  }}
+                  aria-label="Competitor Price Shift Slider"
+                  className="w-full accent-red-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between text-zinc-300">
+                <div className="flex justify-between text-app-primary font-semibold">
                   <span>Competitor Feature Velocity Jump:</span>
-                  <span className="text-indigo-400 font-bold">+{customFeatureDelta} pts</span>
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold">+{customFeatureDelta} pts</span>
                 </div>
                 <input
                   type="range"
@@ -237,18 +404,47 @@ export default function WarRoomPage() {
                   max={40}
                   step={2}
                   value={customFeatureDelta}
-                  onChange={(e) => setCustomFeatureDelta(Number(e.target.value))}
-                  className="w-full accent-indigo-500 cursor-pointer"
+                  onChange={(e) => {
+                    setCustomFeatureDelta(Number(e.target.value));
+                    setSimulationResult(null);
+                  }}
+                  aria-label="Competitor Feature Velocity Slider"
+                  className="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg"
                 />
               </div>
 
+              {/* Live Simulation Progress Stream */}
+              {isSimulating && (
+                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 space-y-2 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-red-600 dark:text-red-400 font-bold">
+                    <span className="flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 animate-spin" />
+                      <span>Monte Carlo Simulation in Progress</span>
+                    </span>
+                    <span>{simProgress}%</span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-linear-to-r from-red-600 to-orange-500 h-full transition-all duration-300"
+                      style={{ width: `${simProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-app-secondary leading-tight truncate">
+                    {simStageText}
+                  </p>
+                </div>
+              )}
+
+              {/* Simulation Trigger Button */}
               <button
                 onClick={handleRunSimulation}
                 disabled={isSimulating}
-                className="w-full py-3 rounded-xl bg-linear-to-r from-red-600 via-rose-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-500/20 transition-all cursor-pointer"
+                className="w-full py-3 rounded-xl bg-linear-to-r from-red-600 via-rose-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md shadow-red-500/20 transition-all cursor-pointer disabled:opacity-50"
               >
                 <Play className={`w-4 h-4 fill-current ${isSimulating ? "animate-spin" : ""}`} />
-                <span>{isSimulating ? "Running Monte Carlo (1,000 iterations)..." : "Run War Room Simulation"}</span>
+                <span>
+                  {isSimulating ? "Simulating 1,000 Market Iterations..." : "Run War Room Simulation"}
+                </span>
               </button>
             </div>
           </div>
@@ -258,122 +454,305 @@ export default function WarRoomPage() {
         <div className="lg:col-span-7 space-y-4">
           {/* Key Impact Forecast Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="p-4 rounded-xl bg-[#111318] border border-red-500/30 space-y-1">
-              <span className="text-[10px] uppercase font-mono text-zinc-400 block">
+            <div className="dashboard-card p-4 rounded-xl border border-red-500/30 bg-surface-primary space-y-1 shadow-2xs">
+              <span className="text-[10px] uppercase font-mono text-app-muted block font-semibold">
                 Estimated ARR at Risk
               </span>
-              <div className="text-xl font-bold font-mono text-red-400">
-                -${projectedLoss}k
+              <div className="text-xl font-bold font-mono text-red-600 dark:text-red-400">
+                -${projectedARRAtRisk}k
               </div>
-              <span className="text-[10px] text-zinc-500 font-mono">Annualized churn exposure</span>
+              <span className="text-[10px] text-app-muted font-mono">Annualized churn exposure</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#111318] border border-amber-500/30 space-y-1">
-              <span className="text-[10px] uppercase font-mono text-zinc-400 block">
+            <div className="dashboard-card p-4 rounded-xl border border-amber-500/30 bg-surface-primary space-y-1 shadow-2xs">
+              <span className="text-[10px] uppercase font-mono text-app-muted block font-semibold">
                 Market Share Delta
               </span>
-              <div className="text-xl font-bold font-mono text-amber-400">
-                {selectedScenario.marketShareShift}%
+              <div className="text-xl font-bold font-mono text-amber-600 dark:text-amber-400">
+                {projectedMarketShareDelta}%
               </div>
-              <span className="text-[10px] text-zinc-500 font-mono">6-month projection</span>
+              <span className="text-[10px] text-app-muted font-mono">6-month projection</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#111318] border border-emerald-500/30 space-y-1">
-              <span className="text-[10px] uppercase font-mono text-zinc-400 block">
+            <div className="dashboard-card p-4 rounded-xl border border-emerald-500/30 bg-surface-primary space-y-1 shadow-2xs">
+              <span className="text-[10px] uppercase font-mono text-app-muted block font-semibold">
                 Playbook Counter Efficacy
               </span>
-              <div className="text-xl font-bold font-mono text-emerald-400">
-                88.5%
+              <div className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                {counterEfficacy}%
               </div>
-              <span className="text-[10px] text-zinc-500 font-mono">Risk mitigated</span>
+              <span className="text-[10px] text-app-muted font-mono">
+                +${arrProtected}k ARR protected
+              </span>
             </div>
           </div>
 
-          {/* Interactive Trajectory Chart */}
-          <div className="p-5 rounded-xl bg-[#111318] border border-[#262A33] space-y-3 shadow-xl">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-200 font-mono">
-                Projected Market Share Trajectory (Without Counter-Offensive)
-              </span>
-              <span className="text-[10px] font-mono text-zinc-500">6-Month Horizon</span>
+          {/* Interactive Trajectory Chart with Defended Projection */}
+          <div className="dashboard-card p-5 rounded-2xl border border-app bg-surface-primary space-y-3 shadow-xs">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold uppercase tracking-wider text-app-primary font-mono block">
+                  Projected Market Share Trajectory (6-Month Horizon)
+                </span>
+                <span className="text-[10px] text-app-muted font-mono">
+                  {simulationResult
+                    ? "Displaying Baseline vs Unmitigated Impact vs Recommended Counter-Playbook"
+                    : "Simulating Baseline vs Unmitigated Impact"}
+                </span>
+              </div>
+              {simulationResult && (
+                <span className="text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>Defense Curve Active</span>
+                </span>
+              )}
             </div>
 
-            <div className="h-48 w-full pt-2">
+            <div className="h-52 w-full pt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={trajectoryData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="projectedGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#EF4444" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+                    <linearGradient id="impactedGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#EF4444" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#EF4444" stopOpacity={0.0} />
                     </linearGradient>
                     <linearGradient id="baselineGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.0} />
+                    </linearGradient>
+                    <linearGradient id="defendedGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10B981" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1D212B" />
-                  <XAxis dataKey="month" stroke="#606778" tick={{ fontSize: 10, fill: "#8E95A5" }} />
-                  <YAxis stroke="#606778" tick={{ fontSize: 10, fill: "#8E95A5" }} domain={[15, 35]} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#1D212B" : "#E2E8F0"} />
+                  <XAxis
+                    dataKey="month"
+                    stroke={isDarkMode ? "#606778" : "#94A3B8"}
+                    tick={{ fontSize: 10, fill: isDarkMode ? "#8E95A5" : "#64748B" }}
+                  />
+                  <YAxis
+                    stroke={isDarkMode ? "#606778" : "#94A3B8"}
+                    tick={{ fontSize: 10, fill: isDarkMode ? "#8E95A5" : "#64748B" }}
+                    domain={[16, 35]}
+                  />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#0D0F14",
-                      border: "1px solid #262A33",
+                      backgroundColor: isDarkMode ? "#0D0F14" : "#FFFFFF",
+                      border: isDarkMode ? "1px solid #262A33" : "1px solid #CBD5E1",
                       borderRadius: "8px",
                       fontSize: "11px",
+                      color: isDarkMode ? "#F5F7FA" : "#0F172A",
                     }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    height={30}
+                    wrapperStyle={{ fontSize: "11px", fontFamily: "monospace" }}
                   />
                   <Area
                     type="monotone"
                     dataKey="baselineShare"
-                    name="Baseline Share %"
+                    name="Organic Baseline %"
                     stroke="#3B82F6"
                     fill="url(#baselineGrad)"
                     strokeWidth={2}
                   />
                   <Area
                     type="monotone"
-                    dataKey="projectedShare"
-                    name="Impacted Share %"
+                    dataKey="impactedShare"
+                    name="Without Defense %"
                     stroke="#EF4444"
-                    fill="url(#projectedGrad)"
+                    fill="url(#impactedGrad)"
                     strokeWidth={2}
                   />
+                  {simulationResult && (
+                    <Area
+                      type="monotone"
+                      dataKey="defendedShare"
+                      name="With Counter-Playbook %"
+                      stroke="#10B981"
+                      fill="url(#defendedGrad)"
+                      strokeWidth={2.5}
+                      strokeDasharray="4 4"
+                    />
+                  )}
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           {/* Recommended Counter-Offensive Playbook */}
-          <div className="p-5 rounded-xl bg-linear-to-br from-[#12151E] to-[#181D28] border border-blue-500/30 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between">
+          <div className="dashboard-card p-5 rounded-2xl border border-blue-500/30 bg-surface-primary space-y-4 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-app pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-blue-400" />
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-300 font-mono">
+                <Sparkles className="w-4 h-4 text-blue-500" />
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-300 font-mono">
                   Recommended Counter-Offensive Playbook
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400 font-bold">
-                ✓ Strategy Team Assigned
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  ✓ Strategy Taskforce Ready
+                </span>
+
+                <button
+                  onClick={() =>
+                    openChatWithPrompt(
+                      `We ran War Room Simulation for scenario "${selectedScenario.title}" against ${selectedScenario.competitor}. Unmitigated ARR at risk is -$${projectedARRAtRisk}k (${projectedMarketShareDelta}% market share). Recommend immediate tactical defense steps and objection handling battlecards.`
+                    )
+                  }
+                  className="px-2.5 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                  title="Ask Copilot for tactical response plan"
+                >
+                  <Bot className="w-3.5 h-3.5 text-white" />
+                  <span>Ask Copilot</span>
+                </button>
+              </div>
             </div>
 
-            <p className="text-xs text-zinc-200 font-medium leading-relaxed">
+            <p className="text-xs text-app-primary font-semibold leading-relaxed bg-blue-500/5 p-3 rounded-xl border border-blue-500/15">
               &quot;{selectedScenario.counterAction}&quot;
             </p>
 
-            <div className="space-y-2 pt-1 border-t border-[#262A33]">
+            <div className="space-y-2 pt-1">
               {selectedScenario.playbookSteps.map((step, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 text-xs">
-                  <div className="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                <div key={idx} className="flex items-start gap-2.5 text-xs p-2.5 rounded-xl bg-surface-secondary border border-app">
+                  <div className="w-5 h-5 rounded-full bg-blue-500/15 text-blue-600 dark:text-blue-400 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {idx + 1}
                   </div>
-                  <span className="text-zinc-300 leading-normal">{step}</span>
+                  <span className="text-app-secondary leading-normal">{step}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Post-Simulation Results & Tactical Directive Response Center */}
+      {simulationResult && (
+        <section className="dashboard-card p-6 sm:p-8 rounded-2xl border border-emerald-500/40 bg-surface-primary space-y-6 shadow-md animate-in fade-in duration-500">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-app pb-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-2xs">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25">
+                    Simulation Run #{simulationResult.runId} Completed
+                  </span>
+                  <span className="text-xs text-app-muted font-mono">
+                    {simulationResult.completedAt}
+                  </span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-app-primary mt-1">
+                  Tactical Risk Assessment &amp; Defense Outcome
+                </h2>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={handleDownloadWarBrief}
+                className="px-3.5 py-2 rounded-xl bg-surface-secondary hover:bg-surface-primary border border-app text-xs font-semibold text-app-primary flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Brief (.md)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDeployDirective}
+                disabled={isDirectiveDeployed}
+                className={`px-4 py-2 rounded-xl font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
+                  isDirectiveDeployed
+                    ? "bg-emerald-600 text-white cursor-default"
+                    : "bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white"
+                }`}
+              >
+                {isDirectiveDeployed ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>✓ Directive Deployed to Strategy Desk</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>Deploy Counter-Offensive Playbook</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Comparative Impact Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl bg-surface-secondary border border-app space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-app-muted block font-semibold">
+                Financial Protection Vector
+              </span>
+              <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                +${simulationResult.arrProtected}k
+              </div>
+              <p className="text-[11px] text-app-secondary">
+                Protected against ${simulationResult.arrRisk}k total exposure ({simulationResult.counterEfficacy}% mitigation rate).
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface-secondary border border-app space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-app-muted block font-semibold">
+                Market Share Containment
+              </span>
+              <div className="text-2xl font-bold font-mono text-blue-600 dark:text-blue-400">
+                {simulationResult.defendedShareDelta}%
+              </div>
+              <p className="text-[11px] text-app-secondary">
+                Residual delta contained from initial {simulationResult.marketShareDelta}% threat exposure.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface-secondary border border-app space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-app-muted block font-semibold">
+                Execution SLA Horizon
+              </span>
+              <div className="text-2xl font-bold font-mono text-amber-600 dark:text-amber-400">
+                &lt; 14 Days
+              </div>
+              <p className="text-[11px] text-app-secondary">
+                Optimal counter-offensive launch window to prevent customer churn lock-in.
+              </p>
+            </div>
+          </div>
+
+          {/* Deployed Notification Banner */}
+          {isDirectiveDeployed && (
+            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-4 animate-in fade-in">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                </span>
+                <div className="text-xs">
+                  <span className="font-bold text-emerald-700 dark:text-emerald-300 uppercase font-mono mr-2">
+                    Action Dispatched:
+                  </span>
+                  <span className="text-app-primary font-semibold">
+                    War Room Playbook Active vs {selectedScenario.competitor}
+                  </span>
+                  <span className="text-app-secondary ml-2">
+                    (In-app notification routed to Strategy &amp; Sales Taskforces)
+                  </span>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-app-muted shrink-0 hidden sm:inline">
+                Check Topbar Notification Bell
+              </span>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }
