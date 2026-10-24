@@ -11,6 +11,7 @@ import { BorderBeam } from "../ui/BorderBeam";
 import { AuthSpotlightHost } from "./AuthSpotlight";
 import { AuthTabs } from "./AuthTabs";
 import { AuthTrustRow } from "./AuthTrustRow";
+import { JudgeAccessDisclosure } from "./JudgeAccessDisclosure";
 
 export function AuthLayout({
   children,
@@ -23,6 +24,7 @@ export function AuthLayout({
 }) {
   const pathname = usePathname();
   const isForgot = pathname?.includes("forgot");
+  const isLogin = pathname === "/login";
 
   return (
     <div className="relative min-h-dvh w-full overflow-x-hidden bg-app">
@@ -96,6 +98,7 @@ export function AuthLayout({
               </div>
 
               <AuthTrustRow />
+              {isLogin && !isForgot ? <JudgeAccessDisclosure /> : null}
               <p className="mt-5 text-center">
                 <Link href="/" className="auth-text-link text-xs text-app-muted inline-flex items-center gap-1">
                   <span aria-hidden className="auth-link-arrow">

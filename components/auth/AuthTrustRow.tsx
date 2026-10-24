@@ -3,9 +3,9 @@
 import { Fingerprint, Lock, Shield } from "lucide-react";
 
 const items = [
-  { icon: Lock, label: "TLS in transit" },
-  { icon: Shield, label: "Source verification" },
-  { icon: Fingerprint, label: "Audit hashes" },
+  { icon: Lock, label: "scrypt password hashes" },
+  { icon: Shield, label: "HttpOnly sessions" },
+  { icon: Fingerprint, label: "Evidence SHA-256" },
 ];
 
 export function AuthTrustRow() {

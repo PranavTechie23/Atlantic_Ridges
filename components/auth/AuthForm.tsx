@@ -21,6 +21,9 @@ import { useApp } from "../../lib/context/AppContext";
 import { cn } from "../../lib/utils";
 import { sounds } from "../../lib/utils/sound";
 import { AuthSessionFlash } from "./AuthSessionFlash";
+import { DEMO_ACCESS_COPY } from "../../lib/auth/demo-access";
+import { SIGN_OUT_COPY } from "../../lib/auth/sign-out";
+import { PASSWORD_POLICY } from "../../lib/auth/password-policy";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -205,25 +208,61 @@ function PasswordStrength({ password }: { password: string }) {
 }
 
 export function LoginForm() {
-  const { login, continueAsGuest, authError, clearAuthError } = useApp();
+  const { login, continueAsGuest, authError, clearAuthError, clearSignOutOverlay } = useApp();
   const { success, complete, goAfterAuth } = useAuthSuccessTransition();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [loggedOutFlash, setLoggedOutFlash] = useState(false);
+  const [loggedOutExiting, setLoggedOutExiting] = useState(false);
+  const [judgePrefill, setJudgePrefill] = useState(false);
 
   useEffect(() => {
-    if (searchParams?.get("loggedOut") !== "true") return;
+    if (searchParams?.get("autofill") !== "judge") return;
+    setEmail(DEMO_ACCESS_COPY.email);
+    setPassword(DEMO_ACCESS_COPY.password);
+    setJudgePrefill(true);
+    clearAuthError();
+    try {
+      const next = searchParams.get("next");
+      const qs = next ? `?next=${encodeURIComponent(next)}` : "";
+      window.history.replaceState(null, "", `/login${qs}`);
+    } catch {
+      /* ignore */
+    }
+  }, [searchParams, clearAuthError]);
+
+  useEffect(() => {
+    clearSignOutOverlay();
+  }, [clearSignOutOverlay]);
+
+  useEffect(() => {
+    clearAuthError();
+    setClientError(null);
+  }, [clearAuthError]);
+
+  const displayError = clientError || authError;
+
+  useEffect(() => {
+    const loggedOut =
+      searchParams?.get("loggedOut") === "1" || searchParams?.get("loggedOut") === "true";
+    if (!loggedOut) return;
     setLoggedOutFlash(true);
-    sounds.playSuccess();
+    setLoggedOutExiting(false);
+    sounds.playTick();
     try {
       window.history.replaceState(null, "", "/login");
     } catch {
       /* ignore */
     }
-    const timer = window.setTimeout(() => setLoggedOutFlash(false), 2400);
-    return () => window.clearTimeout(timer);
+    const fadeTimer = window.setTimeout(() => setLoggedOutExiting(true), SIGN_OUT_COPY.loginFlashDurationMs - 420);
+    const hideTimer = window.setTimeout(() => setLoggedOutFlash(false), SIGN_OUT_COPY.loginFlashDurationMs);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(hideTimer);
+    };
   }, [searchParams]);
 
   const goDemo = () => {
@@ -235,8 +274,14 @@ export function LoginForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAuthError();
+    setClientError(null);
+    const trimmedEmail = email.trim();
+    if (!EMAIL_RE.test(trimmedEmail) || password.length < 6) {
+      setClientError("Enter a valid email and password (min. 6 characters).");
+      return;
+    }
     setLoading(true);
-    const ok = await login(email, password);
+    const ok = await login(trimmedEmail, password);
     if (ok) {
       complete();
       setLoading(false);
@@ -248,26 +293,31 @@ export function LoginForm() {
   return (
     <div className="relative">
       {success && (
-        <AuthSessionFlash variant="sign-in" message="Signed in" subtitle="Redirecting…" />
+        <AuthSessionFlash
+          variant="sign-in"
+          message="Welcome back"
+          subtitle="Securing your workspace…"
+        />
       )}
       {loggedOutFlash && (
         <AuthSessionFlash
           variant="sign-out"
-          message="Signed out"
-          subtitle="Session secured — sign in when you're ready"
+          exiting={loggedOutExiting}
+          message={SIGN_OUT_COPY.loginFlash.message}
+          subtitle={SIGN_OUT_COPY.loginFlash.subtitle}
         />
       )}
     <form onSubmit={submit} className="space-y-5">
       <LoginNextHint />
-      {authError && (
-        <div className="auth-error-banner text-sm text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3">
-          {authError}
+      {judgePrefill && (
+        <div className="auth-hint-enter flex items-start gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2.5 text-xs text-app-secondary">
+          <Lock className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+          <span>
+            Judge credentials loaded from the verification suite — click{" "}
+            <strong className="text-app-primary">Sign in</strong> to verify server auth.
+          </span>
         </div>
       )}
-
-      <SocialButtons onDemo={goDemo} />
-      <AuthDivider />
-
       <Field
         label="Email"
         id="email"
@@ -293,18 +343,26 @@ export function LoginForm() {
         showValidWhen={(v) => v.length >= 6}
       />
 
+      <p
+        className="auth-field-stagger text-[11px] text-app-muted leading-relaxed -mt-2"
+        style={{ "--field-delay": "160ms" } as React.CSSProperties}
+      >
+      </p>
+
       <div
-        className="auth-field-stagger flex items-center justify-between text-sm"
+        className="auth-field-stagger flex items-center justify-end text-sm -mt-1"
         style={{ "--field-delay": "180ms" } as React.CSSProperties}
       >
-        <label className="flex items-center gap-2 text-app-secondary cursor-pointer select-none">
-          <input type="checkbox" className="auth-checkbox rounded border-app" defaultChecked />
-          Remember me
-        </label>
         <Link href="/forgot-password" className="auth-text-link text-blue-600 dark:text-blue-400 font-medium">
           Forgot password?
         </Link>
       </div>
+
+      {displayError && (
+        <div className="auth-error-banner text-sm text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3">
+          {displayError}
+        </div>
+      )}
 
       <button
         type="submit"
@@ -317,7 +375,7 @@ export function LoginForm() {
         {loading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin relative z-10" />
-            <span className="relative z-10 sr-only sm:not-sr-only sm:inline">Securing session…</span>
+            <span className="relative z-10 sr-only sm:not-sr-only sm:inline">Verifying credentials…</span>
           </>
         ) : (
           <>
@@ -346,12 +404,38 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
+
+  useEffect(() => {
+    clearAuthError();
+    setClientError(null);
+  }, [clearAuthError]);
+
+  const displayError = clientError || authError;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAuthError();
+    setClientError(null);
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    if (trimmedName.length < 2) {
+      setClientError("Enter your full name.");
+      return;
+    }
+    if (!EMAIL_RE.test(trimmedEmail)) {
+      setClientError("Enter a valid work email.");
+      return;
+    }
+    if (!PASSWORD_POLICY.validate(password)) {
+      setClientError(PASSWORD_POLICY.message);
+      return;
+    }
+
     setLoading(true);
-    const ok = await signup({ name, email, password });
+    const ok = await signup({ name: trimmedName, email: trimmedEmail, password });
     if (ok) {
       complete();
       setLoading(false);
@@ -366,9 +450,9 @@ export function SignupForm() {
         <AuthSessionFlash variant="sign-in" message="Workspace created" subtitle="Redirecting…" />
       )}
     <form onSubmit={submit} className="space-y-5">
-      {authError && (
+      {displayError && (
         <div className="auth-error-banner text-sm text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-4 py-3">
-          {authError}
+          {displayError}
         </div>
       )}
 
@@ -377,7 +461,10 @@ export function SignupForm() {
         id="name"
         type="text"
         value={name}
-        onChange={setName}
+        onChange={(v) => {
+          setName(v);
+          if (clientError) setClientError(null);
+        }}
         placeholder="Alex Morgan"
         icon={User}
         autoComplete="name"
@@ -389,7 +476,10 @@ export function SignupForm() {
         id="email"
         type="email"
         value={email}
-        onChange={setEmail}
+        onChange={(v) => {
+          setEmail(v);
+          if (clientError) setClientError(null);
+        }}
         placeholder="you@company.com"
         icon={Mail}
         autoComplete="email"
@@ -402,11 +492,14 @@ export function SignupForm() {
           id="password"
           type="password"
           value={password}
-          onChange={setPassword}
-          placeholder="Min. 6 characters"
+          onChange={(v) => {
+            setPassword(v);
+            if (clientError) setClientError(null);
+          }}
+          placeholder="Min. 8 chars, letter + number"
           icon={Lock}
           autoComplete="new-password"
-          showValidWhen={(v) => v.length >= 10 && /[A-Z]/.test(v) && /[0-9]/.test(v)}
+          showValidWhen={(v) => PASSWORD_POLICY.validate(v)}
         />
         <PasswordStrength password={password} />
       </div>
