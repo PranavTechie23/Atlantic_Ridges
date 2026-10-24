@@ -106,6 +106,8 @@ export default function TimeMachinePage() {
   const [selectedCompId, setSelectedCompId] = useState<string>("comp-acme");
   const [splitPos, setSplitPos] = useState<number>(50); // percentage 0 to 100
   const [isGhostOverlay, setIsGhostOverlay] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const stageRef = React.useRef<HTMLDivElement>(null);
 
   const currentPair = PRESET_SNAPSHOTS[selectedCompId] || PRESET_SNAPSHOTS["comp-acme"];
 
@@ -114,35 +116,64 @@ export default function TimeMachinePage() {
     setSplitPos(Number(e.target.value));
   };
 
+  const updateSplitFromPointer = (clientX: number) => {
+    if (!stageRef.current) return;
+    const rect = stageRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const newPos = Math.round(Math.max(5, Math.min(95, (x / rect.width) * 100)));
+    setSplitPos(newPos);
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    updateSplitFromPointer(e.clientX);
+    sounds.playTick();
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    updateSplitFromPointer(e.clientX);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      setIsDragging(false);
+      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+    }
+  };
+
   return (
-    <div className="space-y-8 pb-20 max-w-6xl mx-auto select-none">
+    <div className="space-y-6 pt-2 pb-20 max-w-6xl mx-auto select-none">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
               VISUAL RECONSTRUCTION ENGINE
             </span>
-            <span className="text-zinc-600">·</span>
+            <span className="text-app-muted">·</span>
             <LivePulseIndicator status="verifying" label="Temporal Diff Active" sublabel="Side-by-Side Reconstruction" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F7FA] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-app-primary tracking-tight">
             Visual Time-Machine &amp; Split-Screen Ghost Diff
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-app-secondary max-w-2xl leading-relaxed">
             Slide horizontally across historical competitor snapshots to reveal exact visual landing page and pricing mutations over time.
           </p>
         </div>
 
         {/* Competitor Toggle Pills */}
-        <div className="flex items-center gap-2 bg-[#111318] p-1.5 rounded-xl border border-[#262A33] text-xs font-mono">
+        <div className="flex items-center gap-1.5 bg-surface-secondary p-1 rounded-xl border border-app text-xs font-mono shadow-2xs self-start sm:self-auto">
           <button
             onClick={() => {
               sounds.playChirp();
               setSelectedCompId("comp-acme");
             }}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer ${
-              selectedCompId === "comp-acme" ? "bg-blue-600 text-white" : "text-zinc-400 hover:text-zinc-200"
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              selectedCompId === "comp-acme"
+                ? "bg-blue-600 text-white shadow-xs"
+                : "text-app-secondary hover:text-app-primary"
             }`}
           >
             Acme Cloud
@@ -152,8 +183,10 @@ export default function TimeMachinePage() {
               sounds.playChirp();
               setSelectedCompId("comp-nova");
             }}
-            className={`px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer ${
-              selectedCompId === "comp-nova" ? "bg-blue-600 text-white" : "text-zinc-400 hover:text-zinc-200"
+            className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+              selectedCompId === "comp-nova"
+                ? "bg-blue-600 text-white shadow-xs"
+                : "text-app-secondary hover:text-app-primary"
             }`}
           >
             NovaAI
@@ -162,26 +195,27 @@ export default function TimeMachinePage() {
       </div>
 
       {/* Interactive Controls Bar */}
-      <div className="p-4 rounded-xl bg-[#111318] border border-[#262A33] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono">
-        <div className="flex items-center gap-3">
-          <Split className="w-4 h-4 text-blue-400" />
-          <span className="text-zinc-300 font-bold uppercase">Drag Split-Screen Position:</span>
-          <span className="text-blue-400 font-bold bg-blue-500/10 px-2 py-0.5 rounded">
+      <div className="dashboard-card p-4 rounded-2xl border border-app bg-surface-primary flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <Split className="w-4 h-4 text-blue-500" />
+          <span className="text-app-primary font-bold uppercase text-[11px]">Split-Screen Position:</span>
+          <span className="text-blue-700 dark:text-blue-400 font-bold bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/25">
             {splitPos}% Revised / {100 - splitPos}% Legacy
           </span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 max-w-xs">
-          <span className="text-[10px] text-red-400">Past</span>
+        <div className="flex items-center gap-3 flex-1 max-w-xs">
+          <span className="text-[10px] text-red-600 dark:text-red-400 font-bold uppercase">Past</span>
           <input
             type="range"
             min={5}
             max={95}
             value={splitPos}
             onChange={handleSliderChange}
-            className="w-full accent-blue-500 cursor-pointer"
+            aria-label="Split Screen Position Slider"
+            className="w-full accent-blue-600 dark:accent-blue-500 cursor-pointer h-2 bg-slate-200 dark:bg-zinc-800 rounded-lg"
           />
-          <span className="text-[10px] text-emerald-400">Present</span>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">Present</span>
         </div>
 
         <button
@@ -189,128 +223,194 @@ export default function TimeMachinePage() {
             sounds.playChirp();
             setIsGhostOverlay(!isGhostOverlay);
           }}
-          className={`px-3 py-1.5 rounded-lg border font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg border font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
             isGhostOverlay
-              ? "bg-purple-600/20 border-purple-500 text-purple-300"
-              : "bg-[#0C0E12] border-[#262A33] text-zinc-400 hover:text-zinc-200"
+              ? "bg-purple-500/15 border-purple-500/40 text-purple-700 dark:text-purple-300 shadow-2xs"
+              : "bg-surface-secondary border-app text-app-secondary hover:text-app-primary"
           }`}
         >
-          <Layers className="w-3.5 h-3.5" />
+          <Layers className="w-3.5 h-3.5 text-purple-500" />
           <span>Ghost Overlay: {isGhostOverlay ? "ON" : "OFF"}</span>
         </button>
       </div>
 
-      {/* Main Split-Screen Visual Comparison Stage */}
-      <div className="relative rounded-2xl bg-[#0C0E12] border border-[#262A33] overflow-hidden shadow-2xl h-[520px]">
-        {/* LEFT / UNDER LAYER: BEFORE STATE (PAST) */}
-        <div className="absolute inset-0 p-8 flex flex-col justify-between bg-radial from-[#151922] to-[#0A0C10] border-r border-[#262A33]">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-red-500/15 text-red-400 border border-red-500/30 uppercase">
-                {currentPair.before.label}
-              </span>
-              <span className="text-xs font-mono text-zinc-500">
-                Observed: {currentPair.before.date}
-              </span>
+      {/* Main Split-Screen Visual Comparison Stage with Browser Frame */}
+      <div className="dashboard-card rounded-2xl border border-app bg-surface-primary overflow-hidden shadow-sm">
+        {/* Browser Mockup Chrome Header */}
+        <div className="px-4 py-3 border-b border-app bg-surface-secondary flex items-center justify-between text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-400/90" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400/90" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/90" />
             </div>
-
-            <div className="space-y-2 pt-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-zinc-200 max-w-md">
-                {currentPair.before.tagline}
-              </h2>
-            </div>
-
-            {/* Pricing Card Simulation */}
-            <div className="p-5 rounded-xl bg-[#111318]/90 border border-red-500/30 max-w-md space-y-3 shadow-lg">
-              <div className="flex justify-between items-baseline">
-                <span className="text-xs font-bold uppercase font-mono text-zinc-400">Pro Subscription</span>
-                <span className="text-2xl font-bold font-mono text-zinc-100">{currentPair.before.proPrice}</span>
-              </div>
-              <ul className="space-y-1.5 text-xs text-zinc-400 font-sans">
-                {currentPair.before.features.map((feat, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className="text-zinc-600">•</span>
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="hidden sm:flex items-center gap-1.5 ml-3 px-3 py-1 rounded-md bg-surface-primary border border-app text-app-muted text-[11px]">
+              <Globe className="w-3 h-3 text-blue-500" />
+              <span>
+                {selectedCompId === "comp-acme"
+                  ? "https://acmecloud.io/pricing"
+                  : "https://novaai.tech/features"}
+              </span>
             </div>
           </div>
-
-          <div className="text-[10px] font-mono text-zinc-500 truncate">
-            Digest: <span className="text-zinc-400">{currentPair.before.sourceDigest}</span>
+          <div className="flex items-center gap-3 text-[11px]">
+            <span className="text-red-700 dark:text-red-400 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+              Historical: {currentPair.before.date}
+            </span>
+            <span className="text-app-muted font-bold">vs</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Current: {currentPair.after.date}
+            </span>
           </div>
         </div>
 
-        {/* RIGHT / OVERLAY LAYER: AFTER STATE (PRESENT) CLIPPED BY SPLIT POSITION */}
+        {/* Interactive Split Viewport */}
         <div
-          style={{ clipPath: `inset(0 0 0 ${splitPos}%)` }}
-          className={`absolute inset-0 p-8 flex flex-col justify-between bg-radial from-[#0E1726] to-[#090D14] border-l border-blue-500/40 transition-none ${
-            isGhostOverlay ? "opacity-85 mix-blend-screen" : ""
-          }`}
+          ref={stageRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          className="relative min-h-[540px] overflow-hidden cursor-ew-resize select-none"
         >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase">
-                {currentPair.after.label}
-              </span>
-              <span className="text-xs font-mono text-emerald-400 font-semibold">
-                ✓ Cryptographically Verified
-              </span>
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-zinc-100 max-w-md">
-                {currentPair.after.tagline}
-              </h2>
-            </div>
-
-            {/* Revised Pricing Card Simulation with Highlighted Changes */}
-            <div className="p-5 rounded-xl bg-[#111318]/90 border border-emerald-500/40 max-w-md space-y-3 shadow-2xl relative overflow-hidden">
-              <BorderBeam size={160} duration={6} colorFrom="#10B981" colorTo="#3B82F6" />
-              <div className="flex justify-between items-baseline">
-                <span className="text-xs font-bold uppercase font-mono text-zinc-300">Pro Subscription</span>
-                <span className="text-2xl font-bold font-mono text-emerald-400">{currentPair.after.proPrice}</span>
+          {/* UNDER LAYER: BEFORE STATE (PAST) */}
+          <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-between bg-linear-to-br from-amber-50/50 via-slate-100/90 to-slate-200/70 dark:from-[#181512] dark:via-[#111318] dark:to-[#0A0C10] border-r border-app">
+            <div className="max-w-2xl mx-auto w-full flex flex-col justify-between h-full space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase bg-red-500/15 text-red-700 dark:text-red-400 border border-red-500/30">
+                  {currentPair.before.label}
+                </span>
+                <span className="text-xs font-mono text-slate-500 dark:text-zinc-500">
+                  Captured: {currentPair.before.date}
+                </span>
               </div>
-              <ul className="space-y-1.5 text-xs text-zinc-300 font-sans">
-                {currentPair.after.features.map((feat, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className={feat.includes("(NEW)") ? "text-emerald-400 font-bold" : "text-zinc-600"}>
-                      ✓
-                    </span>
-                    <span className={feat.includes("(NEW)") ? "text-emerald-300 font-semibold" : ""}>{feat}</span>
-                  </li>
-                ))}
-              </ul>
+
+              <div className="text-center space-y-1">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">
+                  {currentPair.before.badge}
+                </span>
+                <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-zinc-100 leading-snug">
+                  {currentPair.before.tagline}
+                </h2>
+              </div>
+
+              {/* Pricing Card Simulation */}
+              <div className="max-w-md mx-auto w-full p-5 rounded-2xl bg-white/95 dark:bg-[#111318]/95 border border-red-500/35 shadow-md space-y-3">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs font-bold uppercase font-mono text-slate-600 dark:text-zinc-400">
+                    Pro Subscription
+                  </span>
+                  <span className="text-2xl font-bold font-mono text-slate-900 dark:text-zinc-100">
+                    {currentPair.before.proPrice}
+                    <span className="text-xs font-normal text-slate-500 dark:text-zinc-500"> /mo</span>
+                  </span>
+                </div>
+                <div className="text-[11px] font-mono text-slate-500 dark:text-zinc-400">
+                  Enterprise Tier: {currentPair.before.enterprisePrice}
+                </div>
+                <ul className="space-y-1.5 text-xs text-slate-600 dark:text-zinc-400 font-sans border-t border-slate-200 dark:border-zinc-800 pt-2.5">
+                  {currentPair.before.features.map((feat, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="text-slate-400 dark:text-zinc-600">•</span>
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="text-[10px] font-mono text-slate-500 dark:text-zinc-500 truncate text-center pt-2">
+                Baseline Digest: <span className="text-slate-700 dark:text-zinc-400">{currentPair.before.sourceDigest}</span>
+              </div>
             </div>
           </div>
 
-          <div className="text-[10px] font-mono text-zinc-500 truncate">
-            Digest: <span className="text-emerald-400">{currentPair.after.sourceDigest}</span>
-          </div>
-        </div>
+          {/* OVERLAY LAYER: AFTER STATE (PRESENT) CLIPPED BY SPLIT POSITION */}
+          <div
+            style={{ clipPath: `inset(0 0 0 ${splitPos}%)` }}
+            className={`absolute inset-0 p-6 sm:p-8 flex flex-col justify-between bg-linear-to-br from-blue-50/70 via-white to-emerald-50/60 dark:from-[#0B1524] dark:via-[#0E1726] dark:to-[#090D14] border-l border-blue-500/40 transition-none ${
+              isGhostOverlay ? "opacity-75" : ""
+            }`}
+          >
+            <div className="max-w-2xl mx-auto w-full flex flex-col justify-between h-full space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+                  {currentPair.after.label}
+                </span>
+                <span className="text-xs font-mono text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  ✓ Cryptographically Verified
+                </span>
+              </div>
 
-        {/* DRAGGABLE VERTICAL DIVIDER LINE WITH PULSING HANDLE */}
-        <div
-          style={{ left: `${splitPos}%` }}
-          className="absolute top-0 bottom-0 w-1 bg-blue-500 shadow-xl pointer-events-none z-40 -translate-x-1/2 flex items-center justify-center"
-        >
-          <div className="w-8 h-8 rounded-full bg-blue-600 border-2 border-white shadow-2xl flex items-center justify-center text-white text-[10px] font-bold">
-            ⇄
+              <div className="text-center space-y-1">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold">
+                  {currentPair.after.badge}
+                </span>
+                <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white leading-snug">
+                  {currentPair.after.tagline}
+                </h2>
+              </div>
+
+              {/* Revised Pricing Card Simulation with Highlighted Changes */}
+              <div className="max-w-md mx-auto w-full p-5 rounded-2xl bg-white/95 dark:bg-[#111318]/95 border-2 border-emerald-500/60 shadow-xl space-y-3 relative overflow-hidden">
+                <BorderBeam size={160} duration={6} colorFrom="#10B981" colorTo="#3B82F6" />
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs font-bold uppercase font-mono text-slate-700 dark:text-zinc-300">
+                    Pro Subscription
+                  </span>
+                  <span className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                    {currentPair.after.proPrice}
+                    <span className="text-xs font-normal text-slate-500 dark:text-zinc-500"> /mo</span>
+                  </span>
+                </div>
+                <div className="text-[11px] font-mono text-slate-500 dark:text-zinc-400 flex items-center justify-between">
+                  <span>Enterprise Tier: {currentPair.after.enterprisePrice}</span>
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                    UPDATED
+                  </span>
+                </div>
+                <ul className="space-y-1.5 text-xs text-slate-700 dark:text-zinc-300 font-sans border-t border-slate-200 dark:border-zinc-800 pt-2.5">
+                  {currentPair.after.features.map((feat, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className={feat.includes("(NEW)") || feat.includes("(UPDATED)") ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-slate-400 dark:text-zinc-600"}>
+                        ✓
+                      </span>
+                      <span className={feat.includes("(NEW)") ? "text-emerald-700 dark:text-emerald-300 font-bold" : feat.includes("(UPDATED)") ? "text-blue-700 dark:text-blue-300 font-semibold" : ""}>
+                        {feat}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="text-[10px] font-mono text-slate-500 dark:text-zinc-500 truncate text-center pt-2">
+                Current Digest: <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{currentPair.after.sourceDigest}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* DRAGGABLE VERTICAL DIVIDER LINE WITH PULSING HANDLE */}
+          <div
+            style={{ left: `${splitPos}%` }}
+            className="absolute top-0 bottom-0 w-1 bg-blue-600 dark:bg-blue-500 shadow-xl pointer-events-none z-40 -translate-x-1/2 flex items-center justify-center"
+          >
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white border-2 border-white dark:border-slate-900 shadow-2xl flex items-center justify-center text-xs font-bold ring-4 ring-blue-500/25">
+              ⇄
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Provenance Strip */}
-      <div className="p-5 rounded-xl bg-[#111318] border border-[#262A33] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="dashboard-card p-5 sm:p-6 rounded-2xl border border-app bg-surface-primary flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-200 font-mono">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-bold uppercase tracking-wider text-app-primary font-mono">
               Visual State Hash Verification
             </span>
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-app-secondary">
             Both historical DOM captures are preserved with immutable SHA-256 hashes in PRYSM&apos;s audit vault.
           </p>
         </div>
@@ -320,7 +420,7 @@ export default function TimeMachinePage() {
             sounds.playSuccess();
             openEvidenceDrawer("ev-acme-pricing-20261023");
           }}
-          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-1.5 self-start sm:self-auto transition-colors cursor-pointer"
+          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-1.5 self-start sm:self-auto transition-colors cursor-pointer shadow-xs"
         >
           <span>Inspect Provenance Artifact</span>
           <ArrowRight className="w-3.5 h-3.5" />
