@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useApp } from "../../lib/context/AppContext";
-import { Search, RefreshCw, Plus, ChevronRight, Volume2, VolumeX, Keyboard, Sparkles } from "lucide-react";
+import { Search, RefreshCw, Plus, ChevronRight, Volume2, VolumeX, Keyboard, Sparkles, Bot } from "lucide-react";
 import { LivePulseIndicator } from "../ui/LivePulseIndicator";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { ThemeToggle } from "../ui/ThemeToggle";
@@ -19,6 +19,7 @@ export function Topbar() {
     openShortcutsModal,
     openScanModal,
     openAddCompetitorModal,
+    openChat,
     isSidebarCollapsed,
     lastScanText,
     isScanningActive,
@@ -56,7 +57,7 @@ export function Topbar() {
 
   return (
     <header
-      className={`fixed top-0 right-0 z-20 h-14 bg-surface-header/95 backdrop-blur-md border-b border-app transition-all duration-200 flex items-center justify-between px-4 sm:px-5 ${sidebarOffset}`}
+      className={`fixed top-0 right-0 z-20 h-14 bg-surface-header/75 backdrop-blur-xl border-b border-app shadow-[0_8px_32px_-24px_rgba(15,23,42,0.5)] transition-all duration-200 flex items-center justify-between px-4 sm:px-5 ${sidebarOffset}`}
     >
       <div className="flex items-center gap-2 min-w-0">
         <Link
@@ -84,6 +85,22 @@ export function Topbar() {
           <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-12 transition-transform duration-300" />
           <span>System Audit</span>
         </Link>
+
+        <button
+          type="button"
+          onClick={() => {
+            sounds.playChirp();
+            openChat();
+          }}
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 text-xs font-semibold transition-all group cursor-pointer"
+          title="Open PRYSM AI Intelligence Copilot (⌘J)"
+        >
+          <Bot className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+          <span className="hidden sm:inline">Copilot</span>
+          <kbd className="hidden lg:inline text-[10px] font-mono px-1 py-0.5 rounded border border-blue-500/30 bg-blue-950/40 text-blue-300">
+            ⌘J
+          </kbd>
+        </button>
 
         <button
           type="button"

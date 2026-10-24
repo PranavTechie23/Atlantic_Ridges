@@ -22,10 +22,12 @@ export interface AuthUser {
   email: string;
   plan: string;
   initials: string;
+  /** Server-verified account vs. local demo workspace */
+  authSource?: "database" | "guest";
 }
 
 interface AppContextType {
-  // Auth (demo — persisted in localStorage)
+  // Auth (Postgres + scrypt when DB available; guest workspace in localStorage)
   user: AuthUser | null;
   authReady: boolean;
   authError: string | null;
@@ -35,6 +37,7 @@ interface AppContextType {
   logout: () => void;
   /** Sign-out with the same animated feedback as sign-in */
   signOutAnimated: () => Promise<void>;
+  clearSignOutOverlay: () => void;
   isSigningOut: boolean;
   continueAsGuest: () => void;
 
@@ -67,6 +70,15 @@ interface AppContextType {
   isShortcutsModalOpen: boolean;
   openShortcutsModal: () => void;
   closeShortcutsModal: () => void;
+
+  // PRYSM AI Chatbot Copilot
+  isChatOpen: boolean;
+  openChat: () => void;
+  closeChat: () => void;
+  toggleChat: () => void;
+  chatInitialPrompt: string | null;
+  openChatWithPrompt: (prompt: string) => void;
+  clearChatInitialPrompt: () => void;
 
   // Sidebar
   isSidebarCollapsed: boolean;
@@ -107,22 +119,10 @@ const GUEST_USER: AuthUser = {
   email: "demo@prysm.io",
   plan: "Enterprise Demo",
   initials: "SN",
+  authSource: "guest",
 };
 
-function buildUser(name: string, email: string): AuthUser {
-  const parts = name.trim().split(/\s+/);
-  const initials =
-    parts.length >= 2
-      ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-      : name.slice(0, 2).toUpperCase();
-  return {
-    id: `user-${Date.now()}`,
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
-    plan: "Pro Intelligence",
-    initials,
-  };
-}
+const GUEST_STORAGE_KEY = "prysm-auth-guest";
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -141,6 +141,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isAddCompetitorModalOpen, setIsAddCompetitorModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatInitialPrompt, setChatInitialPrompt] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -173,78 +175,144 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.add("dark");
     }
 
-    try {
-      const raw = localStorage.getItem("prysm-auth-user");
-      if (raw) {
-        setUser(JSON.parse(raw) as AuthUser);
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/session", { credentials: "include" });
+        if (res.ok) {
+          const data = (await res.json()) as { user?: AuthUser };
+          if (data.user) {
+            setUser({ ...data.user, authSource: "database" });
+            try {
+              localStorage.removeItem(GUEST_STORAGE_KEY);
+              localStorage.removeItem("prysm-auth-user");
+            } catch {}
+            setAuthReady(true);
+            return;
+          }
+        }
+      } catch {
+        /* offline or DB down */
       }
-    } catch {
-      /* no session — user stays null until login or demo workspace */
-    }
-    setAuthReady(true);
+
+      try {
+        if (localStorage.getItem(GUEST_STORAGE_KEY) === "true") {
+          setUser(GUEST_USER);
+        } else {
+          const legacy = localStorage.getItem("prysm-auth-user");
+          if (legacy) {
+            localStorage.removeItem("prysm-auth-user");
+          }
+        }
+      } catch {
+        /* no session */
+      }
+      setAuthReady(true);
+    })();
   }, []);
 
-  const persistUser = useCallback((next: AuthUser | null) => {
-    setUser(next);
+  const persistGuest = useCallback((active: boolean) => {
     try {
-      if (next) localStorage.setItem("prysm-auth-user", JSON.stringify(next));
-      else localStorage.removeItem("prysm-auth-user");
+      if (active) localStorage.setItem(GUEST_STORAGE_KEY, "true");
+      else localStorage.removeItem(GUEST_STORAGE_KEY);
+      localStorage.removeItem("prysm-auth-user");
     } catch {}
   }, []);
+
+  const persistUser = useCallback(
+    (next: AuthUser | null) => {
+      setUser(next);
+      if (next?.authSource === "guest") {
+        persistGuest(true);
+      } else if (!next) {
+        persistGuest(false);
+      }
+    },
+    [persistGuest]
+  );
 
   const clearAuthError = useCallback(() => setAuthError(null), []);
 
   const login = useCallback(async (email: string, password: string) => {
     setAuthError(null);
-    await new Promise((r) => setTimeout(r, 500));
-    if (!email.includes("@") || password.length < 6) {
-      setAuthError("Enter a valid email and password (6+ characters).");
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = (await res.json()) as { user?: AuthUser; error?: string };
+      if (!res.ok) {
+        setAuthError(data.error ?? "Sign in failed.");
+        return false;
+      }
+      if (data.user) {
+        persistGuest(false);
+        setUser({ ...data.user, authSource: "database" });
+      }
+      return true;
+    } catch {
+      setAuthError("Network error. Check your connection and try again.");
       return false;
     }
-    const name = email.split("@")[0].replace(/[._]/g, " ");
-    const formatted = name.charAt(0).toUpperCase() + name.slice(1);
-    persistUser(buildUser(formatted, email));
-    return true;
-  }, [persistUser]);
+  }, [persistGuest]);
 
   const signup = useCallback(
     async (data: { name: string; email: string; password: string }) => {
       setAuthError(null);
-      await new Promise((r) => setTimeout(r, 600));
-      if (!data.name.trim() || !data.email.includes("@")) {
-        setAuthError("Name and a valid email are required.");
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const body = (await res.json()) as { user?: AuthUser; error?: string };
+        if (!res.ok) {
+          setAuthError(body.error ?? "Sign up failed.");
+          return false;
+        }
+        if (body.user) {
+          persistGuest(false);
+          setUser({ ...body.user, authSource: "database" });
+        }
+        return true;
+      } catch {
+        setAuthError("Network error. Check your connection and try again.");
         return false;
       }
-      if (data.password.length < 6) {
-        setAuthError("Password must be at least 6 characters.");
-        return false;
-      }
-      persistUser(buildUser(data.name, data.email));
-      return true;
     },
-    [persistUser]
+    [persistGuest]
   );
 
   const logout = useCallback(() => {
+    void fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     persistUser(null);
     setAuthError(null);
   }, [persistUser]);
 
-  const signOutAnimated = useCallback(() => {
-    if (isSigningOut) return Promise.resolve();
+  const clearSignOutOverlay = useCallback(() => {
+    setIsSigningOut(false);
+  }, []);
+
+  const signOutAnimated = useCallback(async () => {
+    if (isSigningOut) return;
     setIsSigningOut(true);
-    sounds.playSuccess();
-    return new Promise<void>((resolve) => {
-      window.setTimeout(() => {
-        persistUser(null);
-        setAuthError(null);
-        setIsSigningOut(false);
-        resolve();
-      }, SIGN_OUT_ANIMATION_MS);
+    sounds.playTick();
+    try {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch {
+      /* proceed — local session still clears */
+    }
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, SIGN_OUT_ANIMATION_MS);
     });
+    persistUser(null);
+    setAuthError(null);
   }, [isSigningOut, persistUser]);
 
   const continueAsGuest = useCallback(() => {
+    void fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     persistUser(GUEST_USER);
   }, [persistUser]);
 
@@ -298,6 +366,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setIsSearchModalOpen((prev) => !prev);
         setIsShortcutsModalOpen(false);
       }
+      if ((e.metaKey || e.ctrlKey) && (e.key === "j" || e.key === "J")) {
+        e.preventDefault();
+        setIsChatOpen((prev) => !prev);
+      }
       if (e.key === "?" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
         setIsShortcutsModalOpen((prev) => !prev);
@@ -308,6 +380,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setIsAddCompetitorModalOpen(false);
         setIsEvidenceDrawerOpen(false);
         setIsShortcutsModalOpen(false);
+        setIsChatOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -445,6 +518,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         signOutAnimated,
+        clearSignOutOverlay,
         isSigningOut,
         continueAsGuest,
         theme,
@@ -480,6 +554,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isShortcutsModalOpen,
         openShortcutsModal: () => setIsShortcutsModalOpen(true),
         closeShortcutsModal: () => setIsShortcutsModalOpen(false),
+        isChatOpen,
+        openChat: () => {
+          setIsChatOpen(true);
+        },
+        closeChat: () => {
+          setIsChatOpen(false);
+          setChatInitialPrompt(null);
+        },
+        toggleChat: () => {
+          setIsChatOpen((prev) => !prev);
+        },
+        chatInitialPrompt,
+        openChatWithPrompt: (prompt: string) => {
+          setChatInitialPrompt(prompt);
+          setIsChatOpen(true);
+        },
+        clearChatInitialPrompt: () => setChatInitialPrompt(null),
         isSidebarCollapsed,
         toggleSidebar,
         notifications,

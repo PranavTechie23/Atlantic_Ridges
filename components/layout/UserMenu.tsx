@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut, Settings, User, ChevronDown } from "lucide-react";
 import { useApp } from "../../lib/context/AppContext";
+import { signOutToLogin } from "../../lib/auth/useSignOutToLogin";
 export function UserMenu() {
   const router = useRouter();
-  const { user, signOutAnimated } = useApp();
+  const { user, signOutAnimated, isSigningOut } = useApp();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -23,8 +24,7 @@ export function UserMenu() {
 
   const handleLogout = async () => {
     setOpen(false);
-    await signOutAnimated();
-    router.push("/login?loggedOut=true");
+    await signOutToLogin(signOutAnimated, router);
   };
 
   if (!user) {
@@ -73,7 +73,8 @@ export function UserMenu() {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-500/10"
+            disabled={isSigningOut}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-500/10 disabled:opacity-50 disabled:pointer-events-none"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign out

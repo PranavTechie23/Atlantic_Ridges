@@ -14,7 +14,6 @@ import {
   CornerDownRight,
   Plus,
   FileText,
-  AlertTriangle,
   History,
   Copy,
   Check,
@@ -22,6 +21,12 @@ import {
 } from "lucide-react";
 import { addEvidenceNote } from "../../lib/api";
 import Link from "next/link";
+import { EvidenceStateText } from "../evidence/EvidenceStateText";
+
+const drawerAside =
+  "relative w-full max-w-2xl bg-surface-primary border-l border-app shadow-2xl flex flex-col h-full z-10 animate-in slide-in-from-right duration-200";
+const drawerOverlay =
+  "fixed inset-0 z-50 overflow-hidden bg-slate-900/40 dark:bg-black/60 backdrop-blur-xs flex justify-end transition-opacity duration-200";
 
 export function EvidenceDrawer() {
   const { isEvidenceDrawerOpen, closeEvidenceDrawer, selectedEvidence, evidenceLoading } = useApp();
@@ -46,27 +51,27 @@ export function EvidenceDrawer() {
 
   if (evidenceLoading) {
     return (
-      <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end">
+      <div className={drawerOverlay}>
         <div className="fixed inset-0" onClick={closeEvidenceDrawer} aria-hidden />
-        <aside className="relative w-full max-w-2xl bg-[#111318] border-l border-[#262A33] shadow-2xl flex flex-col h-full z-10 animate-in slide-in-from-right duration-200">
-          <div className="p-5 border-b border-[#262A33] flex items-center justify-between bg-[#151820]">
+        <aside className={drawerAside}>
+          <div className="p-5 border-b border-app flex items-center justify-between bg-surface-secondary">
             <div className="space-y-2 flex-1">
-              <div className="h-3 w-24 rounded bg-[#1E232E] animate-pulse" />
-              <div className="h-5 w-3/4 max-w-md rounded bg-[#1E232E] animate-pulse" />
+              <div className="h-3 w-24 rounded bg-surface-secondary dark:bg-[#1E232E] animate-pulse border border-app" />
+              <div className="h-5 w-3/4 max-w-md rounded bg-surface-secondary dark:bg-[#1E232E] animate-pulse border border-app" />
             </div>
             <button
               type="button"
               onClick={closeEvidenceDrawer}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#1F232D]"
+              className="p-1.5 rounded-lg text-app-muted hover:text-app-primary hover:bg-surface-secondary transition-colors"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center">
-            <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
-            <p className="text-sm font-medium text-zinc-300">Verifying evidence chain…</p>
-            <p className="text-xs text-zinc-500 font-mono">SHA-256 · source URL · observation date</p>
+            <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+            <p className="text-sm font-medium text-app-secondary">Verifying evidence chain…</p>
+            <p className="text-xs text-app-muted font-mono">SHA-256 · source URL · observation date</p>
           </div>
         </aside>
       </div>
@@ -75,20 +80,26 @@ export function EvidenceDrawer() {
 
   if (!selectedEvidence) {
     return (
-      <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end">
+      <div className={drawerOverlay}>
         <div className="fixed inset-0" onClick={closeEvidenceDrawer} aria-hidden />
-        <aside className="relative w-full max-w-2xl bg-[#111318] border-l border-[#262A33] shadow-2xl flex flex-col h-full z-10 p-8">
+        <aside className={`${drawerAside} p-8`}>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-zinc-100">Evidence unavailable</h2>
-            <button type="button" onClick={closeEvidenceDrawer} className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100">
+            <h2 className="text-lg font-semibold text-app-primary">Evidence unavailable</h2>
+            <button
+              type="button"
+              onClick={closeEvidenceDrawer}
+              className="p-1.5 rounded-lg text-app-muted hover:text-app-primary"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-sm text-zinc-400">This artifact could not be loaded. Try another signal from the timeline.</p>
+          <p className="text-sm text-app-muted">
+            This artifact could not be loaded. Try another signal from the timeline.
+          </p>
           <Link
             href="/evidence"
             onClick={closeEvidenceDrawer}
-            className="mt-6 inline-flex text-sm font-semibold text-blue-400 hover:underline"
+            className="mt-6 inline-flex text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
           >
             Browse evidence explorer
           </Link>
@@ -120,34 +131,28 @@ export function EvidenceDrawer() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end transition-opacity duration-200">
-      <div
-        className="fixed inset-0"
-        onClick={closeEvidenceDrawer}
-        aria-hidden="true"
-      />
+    <div className={drawerOverlay}>
+      <div className="fixed inset-0" onClick={closeEvidenceDrawer} aria-hidden="true" />
 
-      <aside className="relative w-full max-w-2xl bg-[#111318] border-l border-[#262A33] shadow-2xl flex flex-col h-full z-10 animate-in slide-in-from-right duration-200">
+      <aside className={drawerAside}>
         {/* Header */}
-        <div className="p-5 border-b border-[#262A33] flex items-start justify-between bg-[#151820]">
+        <div className="p-5 border-b border-app flex items-start justify-between bg-surface-secondary">
           <div className="space-y-1.5 pr-4">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-semibold uppercase tracking-wider text-blue-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                 {selectedEvidence.competitorName}
               </span>
-              <span className="text-zinc-600">·</span>
+              <span className="text-app-muted">·</span>
               <CategoryBadge category={selectedEvidence.category} />
               <SeverityBadge severity={selectedEvidence.severity} />
               <StatusBadge status={selectedEvidence.verificationStatus} />
             </div>
-            <h2 className="text-lg font-bold text-[#F5F7FA] leading-snug">
-              {selectedEvidence.title}
-            </h2>
+            <h2 className="text-lg font-bold text-app-primary leading-snug">{selectedEvidence.title}</h2>
           </div>
 
           <button
             onClick={closeEvidenceDrawer}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#1F232D] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-app-muted hover:text-app-primary hover:bg-surface-primary dark:hover:bg-[#1F232D] transition-colors cursor-pointer"
             title="Close drawer (Esc)"
           >
             <X className="w-5 h-5" />
@@ -157,23 +162,23 @@ export function EvidenceDrawer() {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm">
           {/* Trust & Provenance Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-[#0E1015] border border-[#262A33] shadow-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-surface-secondary border border-app shadow-xs">
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-zinc-500 flex items-center gap-1 font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+              <div className="text-[11px] uppercase tracking-wider text-app-muted flex items-center gap-1 font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 Confidence
               </div>
-              <div className="mt-1 font-mono font-bold text-base text-zinc-100">
+              <div className="mt-1 font-mono font-bold text-base text-app-primary">
                 {selectedEvidence.confidence}%
               </div>
             </div>
 
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-zinc-500 flex items-center gap-1 font-semibold">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <div className="text-[11px] uppercase tracking-wider text-app-muted flex items-center gap-1 font-semibold">
+                <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 Observed
               </div>
-              <div className="mt-1 font-mono text-xs text-zinc-200 truncate">
+              <div className="mt-1 font-mono text-xs text-app-secondary truncate">
                 {new Date(selectedEvidence.observedCurrentDate).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -183,11 +188,11 @@ export function EvidenceDrawer() {
             </div>
 
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-zinc-500 flex items-center gap-1 font-semibold">
-                <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+              <div className="text-[11px] uppercase tracking-wider text-app-muted flex items-center gap-1 font-semibold">
+                <Calendar className="w-3.5 h-3.5 text-app-muted" />
                 Prior Check
               </div>
-              <div className="mt-1 font-mono text-xs text-zinc-400 truncate">
+              <div className="mt-1 font-mono text-xs text-app-muted truncate">
                 {new Date(selectedEvidence.observedPreviousDate).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -197,29 +202,29 @@ export function EvidenceDrawer() {
             </div>
 
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-zinc-500 flex items-center gap-1 font-semibold">
-                <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="text-[11px] uppercase tracking-wider text-app-muted flex items-center gap-1 font-semibold">
+                <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 Audit Status
               </div>
-              <div className="mt-1 text-xs text-emerald-400 font-bold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <div className="mt-1 text-xs text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                 SHA-256 Valid
               </div>
             </div>
           </div>
 
           {/* Strategic Narrative / Why It Matters */}
-          <div className="space-y-2.5 p-4 rounded-xl bg-blue-950/20 border border-blue-500/30 shadow-xs">
-            <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+          <div className="space-y-2.5 p-4 rounded-xl bg-blue-50 border border-blue-200/80 dark:bg-blue-950/20 dark:border-blue-500/30 shadow-xs">
+            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
               <CornerDownRight className="w-4 h-4" />
               Strategic Implication (Why this matters)
             </div>
-            <p className="text-zinc-200 leading-relaxed text-xs sm:text-sm">
+            <p className="text-app-secondary leading-relaxed text-xs sm:text-sm">
               {selectedEvidence.strategicImplication}
             </p>
             {selectedEvidence.recommendedAction && (
-              <div className="pt-2.5 mt-2 border-t border-blue-900/40 text-xs text-blue-300">
-                <span className="font-bold text-blue-200">Recommended Executive Move: </span>
+              <div className="pt-2.5 mt-2 border-t border-blue-200/80 dark:border-blue-900/40 text-xs text-blue-800 dark:text-blue-300">
+                <span className="font-bold text-blue-900 dark:text-blue-200">Recommended Executive Move: </span>
                 {selectedEvidence.recommendedAction}
               </div>
             )}
@@ -228,86 +233,82 @@ export function EvidenceDrawer() {
           {/* Visual Before vs After Diff Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-zinc-400" />
+              <div className="text-xs font-bold uppercase tracking-wider text-app-muted flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5" />
                 Verified State Diff (Before vs After)
               </div>
-              <span className="text-[11px] font-mono text-zinc-500">DOM extraction diff</span>
+              <span className="text-[11px] font-mono text-app-muted">Verified field-level diff</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* Before */}
-              <div className="rounded-xl bg-[#0C0E12] border border-[#262A33] overflow-hidden shadow-xs">
-                <div className="px-3.5 py-2 bg-[#14171E] border-b border-[#262A33] flex items-center justify-between text-xs font-mono text-zinc-400">
-                  <span className="text-red-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+              <div className="rounded-xl bg-surface-secondary border border-app overflow-hidden shadow-xs">
+                <div className="px-3.5 py-2 bg-white dark:bg-[#14171E] border-b border-app flex items-center justify-between text-xs font-mono text-app-muted">
+                  <span className="text-red-600 dark:text-red-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 dark:bg-red-400" />
                     PREVIOUS STATE
                   </span>
-                  <span className="text-[10px] text-zinc-500">
+                  <span className="text-[10px] text-app-muted">
                     {new Date(selectedEvidence.observedPreviousDate).toLocaleDateString()}
                   </span>
                 </div>
-                <div className="p-3.5 font-mono text-xs text-zinc-300 overflow-x-auto whitespace-pre-wrap leading-relaxed diff-removed">
-                  {selectedEvidence.beforeContent}
-                </div>
+                <EvidenceStateText content={selectedEvidence.beforeContent} variant="before" className="mx-1 mb-1" />
               </div>
 
               {/* After */}
-              <div className="rounded-xl bg-[#0C0E12] border border-[#262A33] overflow-hidden shadow-xs">
-                <div className="px-3.5 py-2 bg-[#14171E] border-b border-[#262A33] flex items-center justify-between text-xs font-mono text-zinc-400">
-                  <span className="text-emerald-400 font-bold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <div className="rounded-xl bg-surface-secondary border border-app overflow-hidden shadow-xs">
+                <div className="px-3.5 py-2 bg-white dark:bg-[#14171E] border-b border-app flex items-center justify-between text-xs font-mono text-app-muted">
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                     CURRENT STATE
                   </span>
-                  <span className="text-[10px] text-zinc-500">
+                  <span className="text-[10px] text-app-muted">
                     {new Date(selectedEvidence.observedCurrentDate).toLocaleDateString()}
                   </span>
                 </div>
-                <div className="p-3.5 font-mono text-xs text-zinc-200 overflow-x-auto whitespace-pre-wrap leading-relaxed diff-added font-medium">
-                  {selectedEvidence.afterContent}
-                </div>
+                <EvidenceStateText content={selectedEvidence.afterContent} variant="after" className="mx-1 mb-1" />
               </div>
             </div>
           </div>
 
           {/* Raw Excerpt & Source Info */}
-          <div className="space-y-3 p-4 rounded-xl bg-[#14171E] border border-[#262A33] shadow-xs">
-            <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <div className="space-y-3 p-4 rounded-xl bg-surface-secondary border border-app shadow-xs">
+            <div className="text-xs font-bold uppercase tracking-wider text-app-muted">
               Raw Extracted Snippet
             </div>
-            <p className="text-xs text-zinc-300 font-mono bg-[#0B0D11] p-3 rounded-lg border border-zinc-800 leading-relaxed">
+            <p className="text-xs text-app-secondary font-mono bg-white dark:bg-[#0B0D11] p-3 rounded-lg border border-app dark:border-zinc-800 leading-relaxed">
               &quot;{selectedEvidence.rawExcerpt}&quot;
             </p>
 
-            <div className="space-y-2 pt-2 border-t border-[#262A33] text-xs">
+            <div className="space-y-2 pt-2 border-t border-app text-xs">
               <div className="flex items-start justify-between gap-4">
-                <span className="text-zinc-500 shrink-0">Source Location</span>
-                <span className="text-zinc-300 font-medium text-right break-all">
+                <span className="text-app-muted shrink-0">Source Location</span>
+                <span className="text-app-secondary font-medium text-right break-all">
                   {selectedEvidence.sourceTitle}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-zinc-500 shrink-0">Detection Engine</span>
-                <span className="text-zinc-300 font-mono text-right">
+                <span className="text-app-muted shrink-0">Detection Engine</span>
+                <span className="text-app-secondary font-mono text-right">
                   {selectedEvidence.detectionMethod}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-zinc-500 shrink-0 flex items-center gap-1">
+                <span className="text-app-muted shrink-0 flex items-center gap-1">
                   <Hash className="w-3 h-3" />
                   Hash Digest
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-zinc-400 font-mono text-[11px] truncate max-w-[220px]">
+                  <span className="text-app-muted font-mono text-[11px] truncate max-w-[220px]">
                     {selectedEvidence.hashDigest}
                   </span>
                   <button
                     onClick={copyHash}
-                    className="p-1 rounded hover:bg-[#202430] text-zinc-400 hover:text-white transition-colors"
+                    className="p-1 rounded hover:bg-surface-primary dark:hover:bg-[#202430] text-app-muted hover:text-app-primary transition-colors"
                     title="Copy full cryptographic hash"
                   >
                     {hasCopiedHash ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     ) : (
                       <Copy className="w-3.5 h-3.5" />
                     )}
@@ -320,7 +321,7 @@ export function EvidenceDrawer() {
           {/* User Intelligence Notes */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-app-muted">
                 Internal Analyst Notes ({notesList.length})
               </span>
             </div>
@@ -330,9 +331,9 @@ export function EvidenceDrawer() {
                 {notesList.map((note, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg bg-[#151820] border border-[#262A33] text-xs text-zinc-300 flex items-start gap-2.5 shadow-2xs"
+                    className="p-3 rounded-lg bg-white dark:bg-[#151820] border border-app text-xs text-app-secondary flex items-start gap-2.5 shadow-2xs"
                   >
-                    <div className="w-5 h-5 rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 font-mono">
+                    <div className="w-5 h-5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-700 dark:text-blue-300 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 font-mono">
                       SN
                     </div>
                     <span className="flex-1 leading-relaxed">{note}</span>
@@ -340,7 +341,7 @@ export function EvidenceDrawer() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-zinc-500 italic">
+              <p className="text-xs text-app-muted italic">
                 No analyst notes recorded yet. Add initial context below.
               </p>
             )}
@@ -351,7 +352,7 @@ export function EvidenceDrawer() {
                 placeholder="Add strategic observation or action note..."
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
-                className="flex-1 px-3 py-2 bg-[#0B0D11] border border-[#262A33] rounded-lg text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
+                className="flex-1 px-3 py-2 bg-white dark:bg-[#0B0D11] border border-app rounded-lg text-xs text-app-primary placeholder:text-app-muted focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
               <button
                 type="submit"
@@ -366,13 +367,13 @@ export function EvidenceDrawer() {
         </div>
 
         {/* Bottom Actions */}
-        <div className="p-4 border-t border-[#262A33] bg-[#14171E] flex items-center justify-between gap-3">
+        <div className="p-4 border-t border-app bg-surface-secondary flex items-center justify-between gap-3">
           <Link
             href={`/competitors/${selectedEvidence.competitorId}`}
             onClick={closeEvidenceDrawer}
-            className="px-3.5 py-2 rounded-lg bg-[#1B1E26] hover:bg-[#252934] border border-[#262A33] text-xs font-semibold text-zinc-200 flex items-center gap-1.5 transition-colors"
+            className="px-3.5 py-2 rounded-lg bg-surface-primary hover:bg-surface-secondary dark:bg-[#1B1E26] dark:hover:bg-[#252934] border border-app text-xs font-semibold text-app-primary flex items-center gap-1.5 transition-colors"
           >
-            <History className="w-3.5 h-3.5 text-zinc-400" />
+            <History className="w-3.5 h-3.5 text-app-muted" />
             View Competitor Profile
           </Link>
 

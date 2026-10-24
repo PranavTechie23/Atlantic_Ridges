@@ -15,8 +15,9 @@ import { RouteGuard } from "../auth/RouteGuard";
 import { isStandaloneShellPath } from "../../lib/auth/routes";
 import { AuthLoadingScreen } from "../auth/AuthLoadingScreen";
 import { ScrollProgressBar } from "../ui/ScrollProgressBar";
-import { FloatingQuickActions } from "../ui/FloatingQuickActions";
+import { PrysmChatbot } from "../chat/PrysmChatbot";
 import { AuthSessionFlash } from "../auth/AuthSessionFlash";
+import { SIGN_OUT_COPY } from "../../lib/auth/sign-out";
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,7 +33,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-app text-app-primary">
+    <div
+      className={`min-h-screen bg-app text-app-primary transition-[filter,opacity] duration-300 ${
+        isSigningOut ? "auth-shell-chrome-dim" : ""
+      }`}
+    >
+      <div aria-hidden="true" className="workspace-atmosphere" />
       <Suspense fallback={<div className="w-[220px] bg-surface-sidebar" />}>
         <Sidebar />
       </Suspense>
@@ -44,9 +50,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <ScrollProgressBar />
 
       <main
-        className={`pt-14 transition-all duration-200 min-h-screen flex flex-col ${
+        className={`pt-14 transition-all duration-300 min-h-screen flex flex-col ${
           isSidebarCollapsed ? "pl-[68px]" : "pl-[220px]"
-        }`}
+        } ${isSigningOut ? "auth-shell-signing-out" : ""}`}
       >
         <div className="flex-1 p-4 sm:p-5 lg:p-6 max-w-6xl w-full mx-auto">
           <Suspense fallback={<div className="p-8 text-center text-app-muted animate-pulse">Loading intelligence...</div>}>
@@ -55,20 +61,20 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </div>
       </main>
 
-      <FloatingQuickActions />
       <EvidenceDrawer />
       <RunScanModal />
       <AddCompetitorModal />
       <GlobalSearchModal />
       <KeyboardShortcutsModal />
       <WelcomeToast />
+      <PrysmChatbot />
 
       {isSigningOut && (
         <AuthSessionFlash
           fullScreen
           variant="sign-out"
-          message="Signed out"
-          subtitle="Securing your session…"
+          message={SIGN_OUT_COPY.overlay.message}
+          subtitle={SIGN_OUT_COPY.overlay.subtitle}
         />
       )}
     </div>

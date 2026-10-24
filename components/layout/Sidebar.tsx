@@ -25,6 +25,7 @@ import {
   Split,
   Sparkles,
   Award,
+  Bot,
 } from "lucide-react";
 
 function SidebarUserCard({ collapsed }: { collapsed: boolean }) {
@@ -72,7 +73,7 @@ function NavSection({
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { isSidebarCollapsed, toggleSidebar } = useApp();
+  const { isSidebarCollapsed, toggleSidebar, openChat } = useApp();
 
   const commandNav = [{ label: "Overview", href: "/dashboard", icon: LayoutDashboard }];
 
@@ -133,7 +134,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`fixed top-0 bottom-0 left-0 z-30 flex flex-col bg-surface-sidebar border-r border-app transition-all duration-200 select-none ${
+      className={`fixed top-0 bottom-0 left-0 z-30 flex flex-col bg-surface-sidebar/80 backdrop-blur-2xl border-r border-app shadow-[12px_0_40px_-36px_rgba(15,23,42,0.7)] transition-all duration-200 select-none ${
         isSidebarCollapsed ? "w-[68px]" : "w-[220px]"
       }`}
     >
@@ -162,6 +163,24 @@ export function Sidebar() {
       <div className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
         <NavSection title="Command" collapsed={isSidebarCollapsed}>
           {commandNav.map(renderLink)}
+          <button
+            type="button"
+            onClick={() => {
+              openChat();
+            }}
+            className={`w-full mt-1 flex items-center gap-3 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all group cursor-pointer ${
+              isSidebarCollapsed ? "justify-center" : ""
+            } bg-linear-to-r from-blue-600/15 via-indigo-600/10 to-cyan-500/15 border border-blue-500/30 text-blue-400 hover:text-blue-300 hover:border-blue-500/50 hover:bg-blue-600/25`}
+            title="PRYSM AI Intelligence Copilot (⌘J)"
+          >
+            <Bot className="w-[18px] h-[18px] text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
+            {!isSidebarCollapsed && (
+              <div className="flex-1 flex items-center justify-between text-left">
+                <span className="font-semibold text-blue-300">PRYSM Copilot</span>
+                <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-blue-500/20 text-blue-300">⌘J</span>
+              </div>
+            )}
+          </button>
         </NavSection>
 
         <NavSection title="Intelligence" collapsed={isSidebarCollapsed}>

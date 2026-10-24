@@ -50,7 +50,7 @@ const steps = [
   {
     title: "4. Live 1-Click Interactive Demo Sandbox",
     requirement: "Problem Statement Req 4: Interactive demonstration sandbox",
-    desc: "Simulate Acme Cloud +30% pricing surge ($79 → $109/mo), track real-time pipeline execution, and auto-synthesize a cited brief in 4.2 seconds.",
+    desc: "Simulate Acme Cloud +30% pricing surge (₹999 → ₹1,299/mo), track real-time pipeline execution, and auto-synthesize a cited brief in 4.2 seconds.",
     actionLabel: "Launch Live Demo Sandbox",
     link: "/demo",
     badge: "Interactive Rehearsal",

@@ -11,8 +11,9 @@ function modKeyLabel() {
 
 const SHORTCUTS = (mod: string) => [
   { keys: [mod, "K"], label: "Open global search" },
+  { keys: [mod, "J"], label: "Toggle PRYSM AI Copilot" },
   { keys: ["?"], label: "Show keyboard shortcuts" },
-  { keys: ["Esc"], label: "Close drawer / modal" },
+  { keys: ["Esc"], label: "Close drawer / modal / chat" },
 ];
 
 export function KeyboardShortcutsModal() {

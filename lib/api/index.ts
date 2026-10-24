@@ -237,7 +237,7 @@ export async function injectSimulatedChange(payload: {
     hashDigest: hashDigest,
     beforeContent: payload.beforeContent,
     afterContent: payload.afterContent,
-    rawExcerpt: `<div class="pricing-matrix" data-digest="${hashDigest}">\n  <!-- Observed Snapshot ${dateFormatted} -->\n  <p>${payload.afterContent}</p>\n</div>`,
+    rawExcerpt: `Verified snapshot (${dateFormatted}): ${payload.afterContent.replace(/\s+/g, " ").slice(0, 220)}… Digest: ${hashDigest.slice(0, 18)}…`,
     strategicImplication: payload.whyItMatters,
     userNotes: ["Auto-captured during Hacknova Live Demo Simulation."],
   };
