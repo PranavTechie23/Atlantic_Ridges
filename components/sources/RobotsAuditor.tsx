@@ -256,7 +256,7 @@ export function RobotsAuditor() {
         <div className="p-4 rounded-xl bg-[#0E1015] border border-[#262A33] space-y-3 text-xs leading-relaxed text-zinc-300">
           <h4 className="font-bold text-zinc-100 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Hacknova &apos;26 Permitted Public Sources Compliance Statement
+            Public Source Access Guidelines
           </h4>
           <p>
             PRYSM is engineered with a strict <strong>Zero-Intrusion Governance Layer</strong>:

@@ -41,7 +41,7 @@ export default function SettingsPage() {
                 </p>
               ) : user?.authSource === "guest" ? (
                 <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">
-                  Demo workspace — sign in with judge credentials for full auth proof
+                  Demo workspace — sign in with a workspace account to view account security details
                 </p>
               ) : null}
             </div>

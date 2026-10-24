@@ -160,7 +160,7 @@ export default function SourcesPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            HACKNOVA &apos;26 RESOURCES & CONSTRAINTS
+            PUBLIC SOURCES &amp; COLLECTION GUIDELINES
           </span>
           <span className="text-zinc-500">·</span>
           <span className="text-xs text-zinc-400 font-mono">
@@ -171,7 +171,7 @@ export default function SourcesPage() {
           Permitted Public Data Sources & Historical Crawl
         </h1>
         <p className="text-sm text-zinc-400 leading-relaxed max-w-3xl">
-          Fulfills Problem Statement Section 7 & Section 6: Connect to permitted public archives (Internet Archive Wayback Machine CDX API, Common Crawl WARC indices, and Kaggle pricing datasets) while adhering to strict ethical web data collection terms and robots.txt constraints.
+          Explore example public archives and data sources, along with responsible collection requirements. This prototype presents sample source records; it does not run an end-to-end live collection service.
         </p>
       </div>
 

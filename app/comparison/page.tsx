@@ -188,7 +188,7 @@ export default function ComparisonPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/25">
-              HACKNOVA &apos;26 REQUIREMENT
+              COMPETITOR INTELLIGENCE
             </span>
             <span className="text-app-muted">·</span>
             <span className="text-xs text-app-muted font-mono">

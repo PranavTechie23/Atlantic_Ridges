@@ -29,7 +29,7 @@ export default function DocsPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            HACKNOVA &apos;26 DELIVERABLE 11
+            PRYSM PRODUCT DOCUMENTATION
           </span>
           <span className="text-zinc-500">·</span>
           <span className="text-xs text-zinc-400 font-mono">
@@ -51,7 +51,7 @@ export default function DocsPage() {
           { id: "diff-methodology", label: "2. Change-Detection & Noise Filter" },
           { id: "significance-math", label: "3. Significance Math" },
           { id: "compliance", label: "4. Permitted Sources & Ethics" },
-          { id: "evaluation-matrix", label: "5. Hacknova Evaluation Matrix" },
+          { id: "evaluation-matrix", label: "5. Product Capability Map" },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -307,16 +307,16 @@ export default function DocsPage() {
         </section>
       )}
 
-      {/* SECTION 5: HACKNOVA EVALUATION MATRIX */}
+      {/* SECTION 5: PRODUCT CAPABILITY MAP */}
       {activeSection === "evaluation-matrix" && (
         <section className="space-y-6">
           <div className="p-6 rounded-2xl bg-[#111318] border border-blue-500/30 shadow-xl space-y-4">
             <h2 className="text-base font-bold text-zinc-100 flex items-center gap-2 font-mono">
               <Award className="w-4 h-4 text-amber-400" />
-              <span>Hacknova &apos;26 Evaluation Criteria Self-Audit</span>
+              <span>PRYSM Capability Overview</span>
             </h2>
             <p className="text-xs text-zinc-300 leading-relaxed">
-              Direct mapping of Hacknova &apos;26 Evaluation Criteria to implemented PRYSM modules:
+              Product capabilities, related PRYSM modules, and their current prototype status:
             </p>
 
             <div className="rounded-xl border border-[#262A33] overflow-hidden text-xs font-mono">
@@ -332,37 +332,37 @@ export default function DocsPage() {
                   <tr>
                     <td className="py-3 px-4 text-zinc-200">Accuracy of data collection &amp; monitoring</td>
                     <td className="py-3 px-4 text-zinc-400">Wayback Machine CDX API, Common Crawl, &amp; Live Robots.txt Ingest (<code className="text-blue-400">/sources</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-amber-400 font-bold">Illustrative</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 text-zinc-200">Effectiveness of change detection</td>
                     <td className="py-3 px-4 text-zinc-400">Noise filter separating nonces from strategic pricing/feature AST deltas (<code className="text-blue-400">/diff-engine</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-amber-400 font-bold">Examples</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 text-zinc-200">Reliability of historical tracking</td>
                     <td className="py-3 px-4 text-zinc-400">Interactive dated timeline stream and snapshot archives (<code className="text-blue-400">/timeline</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-amber-400 font-bold">Sample data</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 text-zinc-200">Quality of competitor comparisons</td>
                     <td className="py-3 px-4 text-zinc-400">Configurable criteria matrix, custom vector builder &amp; Radar Chart (<code className="text-blue-400">/comparison</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-emerald-400 font-bold">Interactive</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 text-zinc-200">Accuracy of evidence and source links</td>
                     <td className="py-3 px-4 text-zinc-400">Cryptographic SHA-256 hashes, DOM diffs &amp; slide-in Evidence Drawer (<code className="text-blue-400">/evidence</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-amber-400 font-bold">Sample records</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 text-zinc-200">Usefulness of alerts and reports</td>
                     <td className="py-3 px-4 text-zinc-400">Configurable alert rules (<code className="text-blue-400">/alerts</code>) &amp; Executive Briefs with citations (<code className="text-blue-400">/reports</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-amber-400 font-bold">UI prototype</td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 text-zinc-200">Hacknova Demonstration Requirement</td>
+                    <td className="py-3 px-4 text-zinc-200">Interactive scenario demonstration</td>
                     <td className="py-3 px-4 text-zinc-400">1-Click Live Change Simulation &amp; Sourced Report Generator (<code className="text-blue-400">/demo</code>)</td>
-                    <td className="py-3 px-3 text-emerald-400 font-bold">100% Complete</td>
+                    <td className="py-3 px-3 text-amber-400 font-bold">Simulated</td>
                   </tr>
                 </tbody>
               </table>

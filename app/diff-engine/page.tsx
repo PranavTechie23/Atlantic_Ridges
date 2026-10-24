@@ -117,8 +117,9 @@ export default function DiffEnginePage() {
   const [thresholdScore, setThresholdScore] = useState(60);
 
   // Dynamic calculation based on active toggles
-  const effectiveScore = selectedCase.type === "noise" && (!stripNonces || !stripCopyright)
-    ? 68 // Without filters, noise would be mistaken for a false positive!
+  const noiseFiltersEnabled = stripNonces && stripTracking && stripCopyright && enableAstNormalization;
+  const effectiveScore = selectedCase.type === "noise" && !noiseFiltersEnabled
+    ? 68
     : selectedCase.significanceScore;
 
   const isSuppressed = effectiveScore < thresholdScore;
@@ -128,54 +129,59 @@ export default function DiffEnginePage() {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            HACKNOVA &apos;26 REQUIREMENT 6
+          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20">
+            CHANGE ANALYSIS WORKBENCH
           </span>
-          <span className="text-zinc-500">·</span>
-          <span className="text-xs text-zinc-400 font-mono">
-            Noise vs. Semantic Signal Separation Architecture
+          <span className="text-app-muted">·</span>
+          <span className="text-xs text-app-secondary font-mono">
+            Explore how page changes can be interpreted
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F7FA] tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-app-primary tracking-tight">
           Change Detection & Noise-Filtering Engine
         </h1>
-        <p className="text-sm text-zinc-400 leading-relaxed max-w-3xl">
-          Constraint: <em>&quot;The system should distinguish meaningful changes from minor or irrelevant webpage modifications.&quot;</em> Test how PRYSM strips ephemeral web nonces, tracking scripts, and boilerplate changes to isolate true strategic signals.
+        <p className="text-sm text-app-secondary leading-relaxed max-w-3xl">
+          Compare prepared page-change examples and see how noise-filter settings affect their illustrative priority. This interactive prototype uses predefined cases; it does not analyze a live webpage.
         </p>
       </div>
 
+      <div className="flex items-start gap-3 rounded-xl border border-blue-500/20 bg-blue-500/[0.06] px-4 py-3 text-xs text-app-secondary">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+        <p><span className="font-semibold text-app-primary">How to use this page:</span> choose an example, inspect the before/after content, then adjust the filters and alert threshold. Scores and outcomes are illustrative demo values.</p>
+      </div>
+
       {/* Case Selector Tabs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         {TEST_CASES.map((tc) => {
           const isSelected = selectedCase.id === tc.id;
           return (
             <button
               key={tc.id}
               onClick={() => setSelectedCase(tc)}
-              className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              className={`min-w-0 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                 isSelected
                   ? "bg-blue-600/15 border-blue-500/50 shadow-md ring-1 ring-blue-500/30"
-                  : "bg-[#111318] border-[#262A33] hover:border-zinc-700"
+                  : "bg-surface-primary border-app hover:border-blue-400 dark:hover:border-zinc-700"
               }`}
             >
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <span
                   className={`px-1.5 py-0.2 rounded text-[10px] font-mono uppercase font-bold ${
                     tc.type === "noise"
-                      ? "bg-zinc-800 text-zinc-400 border border-zinc-700"
-                      : "bg-red-500/15 text-red-400 border border-red-500/30"
+                      ? "bg-slate-100 text-slate-600 border border-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                      : "bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30"
                   }`}
                 >
                   {tc.type === "noise" ? "Noise Test" : "Strategic Signal"}
                 </span>
-                <span className="text-xs font-mono font-semibold text-zinc-300">
-                  Score: {tc.significanceScore}/100
+                <span className="text-xs font-mono font-semibold text-app-secondary">
+                  Example score: {tc.significanceScore}/100
                 </span>
               </div>
-              <h3 className={`text-xs font-bold line-clamp-1 ${isSelected ? "text-blue-300" : "text-zinc-200"}`}>
+              <h3 className={`text-xs font-bold leading-snug line-clamp-2 min-h-8 ${isSelected ? "text-blue-700 dark:text-blue-300" : "text-app-primary"}`}>
                 {tc.title}
               </h3>
-              <p className="text-[11px] text-zinc-400 mt-1 line-clamp-2">
+              <p className="text-[11px] text-app-secondary mt-1 line-clamp-2">
                 {tc.description}
               </p>
             </button>
@@ -184,66 +190,66 @@ export default function DiffEnginePage() {
       </div>
 
       {/* Interactive Controls & Filters Panel */}
-      <div className="p-5 rounded-xl bg-[#111318] border border-[#262A33] space-y-4 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#262A33] pb-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-200 font-mono">
-            <Sliders className="w-4 h-4 text-blue-400" />
+      <div className="p-5 rounded-xl bg-surface-primary border border-app space-y-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-app pb-3">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-app-primary font-mono">
+            <Sliders className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span>Interactive Noise-Filter Layer Controls</span>
           </div>
-          <span className="text-[11px] text-zinc-400">
+          <span className="text-[11px] text-app-muted">
             Toggle filter layers below to observe how the significance score recalculates
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#0C0E12] border border-[#262A33] cursor-pointer hover:border-zinc-700 transition-colors">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 text-xs">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-secondary border border-app cursor-pointer hover:border-blue-400 transition-colors">
             <input
               type="checkbox"
               checked={stripNonces}
               onChange={(e) => setStripNonces(e.target.checked)}
-              className="rounded border-zinc-700 text-blue-600 focus:ring-0"
+              className="rounded border-slate-300 dark:border-zinc-700 text-blue-600 focus:ring-0"
             />
-            <span className="text-zinc-300">Strip CSRF & Session Nonces</span>
+            <span className="text-app-secondary">Strip CSRF & Session Nonces</span>
           </label>
 
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#0C0E12] border border-[#262A33] cursor-pointer hover:border-zinc-700 transition-colors">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-secondary border border-app cursor-pointer hover:border-blue-400 transition-colors">
             <input
               type="checkbox"
               checked={stripTracking}
               onChange={(e) => setStripTracking(e.target.checked)}
-              className="rounded border-zinc-700 text-blue-600 focus:ring-0"
+              className="rounded border-slate-300 dark:border-zinc-700 text-blue-600 focus:ring-0"
             />
-            <span className="text-zinc-300">Strip Google Tag & Analytics</span>
+            <span className="text-app-secondary">Strip Google Tag & Analytics</span>
           </label>
 
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#0C0E12] border border-[#262A33] cursor-pointer hover:border-zinc-700 transition-colors">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-secondary border border-app cursor-pointer hover:border-blue-400 transition-colors">
             <input
               type="checkbox"
               checked={stripCopyright}
               onChange={(e) => setStripCopyright(e.target.checked)}
-              className="rounded border-zinc-700 text-blue-600 focus:ring-0"
+              className="rounded border-slate-300 dark:border-zinc-700 text-blue-600 focus:ring-0"
             />
-            <span className="text-zinc-300">Filter Copyright Year Rollovers</span>
+            <span className="text-app-secondary">Filter Copyright Year Rollovers</span>
           </label>
 
-          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#0C0E12] border border-[#262A33] cursor-pointer hover:border-zinc-700 transition-colors">
+          <label className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface-secondary border border-app cursor-pointer hover:border-blue-400 transition-colors">
             <input
               type="checkbox"
               checked={enableAstNormalization}
               onChange={(e) => setEnableAstNormalization(e.target.checked)}
-              className="rounded border-zinc-700 text-blue-600 focus:ring-0"
+              className="rounded border-slate-300 dark:border-zinc-700 text-blue-600 focus:ring-0"
             />
-            <span className="text-zinc-300">Entity AST Normalization</span>
+            <span className="text-app-secondary">Entity AST Normalization</span>
           </label>
         </div>
 
         {/* Threshold Slider */}
-        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
-            <span className="text-zinc-400 font-mono uppercase text-[11px]">
-              Significance Threshold for Alert Dispatch:
+            <span className="text-app-secondary font-mono uppercase text-[11px]">
+              Illustrative Alert Threshold:
             </span>
-            <span className="font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/30">
+            <span className="font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/30">
               ≥ {thresholdScore} / 100
             </span>
           </div>
@@ -259,44 +265,44 @@ export default function DiffEnginePage() {
       </div>
 
       {/* Side-by-side Visual Inspection Stage */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
         {/* Left: Raw HTML DOM Diff */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="p-5 rounded-xl bg-[#111318] border border-[#262A33] space-y-3">
+        <div className="min-w-0 space-y-4">
+          <div className="p-5 rounded-xl bg-surface-primary border border-app space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2 font-mono">
-                <Code className="w-4 h-4 text-blue-400" />
-                Raw Ingested HTML (Pre-Filter)
+              <span className="text-xs font-bold uppercase tracking-wider text-app-primary flex items-center gap-2 font-mono">
+                <Code className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                Example Page Content (Before Filtering)
               </span>
-              <span className="text-[10px] font-mono text-zinc-500">Unfiltered DOM</span>
+              <span className="text-[10px] font-mono text-app-muted">Prepared example</span>
             </div>
 
             <div className="space-y-3 text-xs font-mono">
-              <div className="p-3 rounded-lg bg-[#0C0E12] border border-red-500/20 space-y-1">
-                <span className="text-[10px] text-red-400 uppercase font-bold block">Previous Snapshot</span>
-                <pre className="text-zinc-400 overflow-x-auto p-2 bg-black/40 rounded text-[11px] leading-relaxed">
+              <div className="p-3 rounded-lg bg-red-50/70 dark:bg-red-950/20 border border-red-200 dark:border-red-500/20 space-y-1">
+                <span className="text-[10px] text-red-700 dark:text-red-400 uppercase font-bold block">Previous Snapshot</span>
+                <pre className="text-app-secondary overflow-x-auto whitespace-pre-wrap break-words p-3 bg-surface-secondary rounded-lg text-[11px] leading-relaxed max-h-64">
                   {selectedCase.rawBefore}
                 </pre>
               </div>
 
-              <div className="p-3 rounded-lg bg-[#0C0E12] border border-emerald-500/20 space-y-1">
-                <span className="text-[10px] text-emerald-400 uppercase font-bold block">Revised Snapshot</span>
-                <pre className="text-zinc-200 overflow-x-auto p-2 bg-black/40 rounded text-[11px] leading-relaxed">
+              <div className="p-3 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-500/20 space-y-1">
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-bold block">Revised Snapshot</span>
+                <pre className="text-app-primary overflow-x-auto whitespace-pre-wrap break-words p-3 bg-surface-secondary rounded-lg text-[11px] leading-relaxed max-h-64">
                   {selectedCase.rawAfter}
                 </pre>
               </div>
             </div>
 
             {selectedCase.noiseTokens.length > 0 && (
-              <div className="pt-2 border-t border-[#1D212B] space-y-1.5">
-                <span className="text-[10px] font-mono uppercase text-amber-400 block font-bold">
+              <div className="pt-3 border-t border-app space-y-1.5">
+                <span className="text-[10px] font-mono uppercase text-amber-700 dark:text-amber-400 block font-bold">
                   Identified Noise Vectors (Targeted for Elimination):
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedCase.noiseTokens.map((tok, i) => (
                     <span
                       key={i}
-                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/20"
+                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20"
                     >
                       {tok}
                     </span>
@@ -308,29 +314,29 @@ export default function DiffEnginePage() {
         </div>
 
         {/* Right: Normalized Semantic AST & Decision */}
-        <div className="lg:col-span-6 space-y-4">
-          <div className="p-5 rounded-xl bg-[#111318] border border-[#262A33] space-y-3">
+        <div className="min-w-0 space-y-4">
+          <div className="p-5 rounded-xl bg-surface-primary border border-app space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2 font-mono">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
-                Normalized Semantic Entity AST
+              <span className="text-xs font-bold uppercase tracking-wider text-app-primary flex items-center gap-2 font-mono">
+                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                Example Normalized Output
               </span>
-              <span className="text-[10px] font-mono text-emerald-400 font-semibold">
-                Post-Filter Stage
+              <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+                Illustrative result
               </span>
             </div>
 
             <div className="space-y-3 text-xs font-mono">
-              <div className="p-3 rounded-lg bg-[#0C0E12] border border-[#262A33] space-y-1">
-                <span className="text-[10px] text-zinc-400 uppercase font-bold block">Sanitized Normalized State</span>
-                <pre className="text-zinc-200 overflow-x-auto p-2 bg-black/40 rounded text-[11px] leading-relaxed">
-                  {selectedCase.normalizedAfter}
+              <div className="p-3 rounded-lg bg-surface-secondary border border-app space-y-1">
+                <span className="text-[10px] text-app-muted uppercase font-bold block">{enableAstNormalization ? "Example normalized state" : "Normalization disabled · raw example"}</span>
+                <pre className="text-app-primary overflow-x-auto whitespace-pre-wrap break-words p-3 bg-surface-secondary rounded-lg text-[11px] leading-relaxed max-h-64">
+                  {enableAstNormalization ? selectedCase.normalizedAfter : selectedCase.rawAfter}
                 </pre>
               </div>
 
-              <div className="p-3.5 rounded-lg bg-[#0C0E12] border border-[#262A33] space-y-1">
-                <span className="text-[10px] text-blue-400 uppercase font-bold block">Computed Semantic Delta</span>
-                <p className="text-xs text-zinc-300 font-sans leading-relaxed">
+              <div className="p-3.5 rounded-lg bg-surface-secondary border border-app space-y-1">
+                <span className="text-[10px] text-blue-700 dark:text-blue-400 uppercase font-bold block">Example Change Summary</span>
+                <p className="text-xs text-app-secondary font-sans leading-relaxed">
                   {selectedCase.semanticDelta}
                 </p>
               </div>
@@ -340,21 +346,21 @@ export default function DiffEnginePage() {
             <div
               className={`p-4 rounded-xl border text-xs space-y-2 ${
                 isSuppressed
-                  ? "bg-zinc-900 border-zinc-700 text-zinc-300"
-                  : "bg-red-500/15 border-red-500/40 text-red-200"
+                  ? "bg-slate-100 border-slate-200 text-slate-700 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-300"
+                  : "bg-red-50 border-red-200 text-red-800 dark:bg-red-500/15 dark:border-red-500/40 dark:text-red-200"
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 font-bold font-mono uppercase tracking-wider">
                   {isSuppressed ? (
                     <>
-                      <ShieldCheck className="w-4 h-4 text-zinc-400" />
-                      <span className="text-zinc-300">Action: Suppressed (Noise Discarded)</span>
+                      <ShieldCheck className="w-4 h-4 text-slate-500 dark:text-zinc-400" />
+                      <span>Outcome: Below alert threshold</span>
                     </>
                   ) : (
                     <>
-                      <ShieldAlert className="w-4 h-4 text-red-400" />
-                      <span className="text-red-300">Action: Strategic Signal Dispatched</span>
+                      <ShieldAlert className="w-4 h-4 text-red-600 dark:text-red-400" />
+                      <span>Outcome: Meets alert threshold</span>
                     </>
                   )}
                 </div>
@@ -362,8 +368,10 @@ export default function DiffEnginePage() {
                   Score: {effectiveScore}/100
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-                {selectedCase.explanation}
+              <p className="text-xs text-app-secondary leading-relaxed font-sans">
+                {isSuppressed
+                  ? `Illustrative outcome: this case falls below the current alert threshold (${thresholdScore}/100).`
+                  : `Illustrative outcome: this case meets the current alert threshold (${thresholdScore}/100).`}
               </p>
             </div>
           </div>
